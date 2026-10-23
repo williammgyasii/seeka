@@ -25,7 +25,7 @@
 
 ## 5. GitHub Actions
 
-- [x] 5.1 Split least-privilege CI into path-filtered backend, frontend, edge, infrastructure, and repository-policy workflows for pull requests and `main`; verify workflow linting and local commands pass
+- [x] 5.1 Split least-privilege CI into backend, frontend, edge, infrastructure, and repository-policy workflows that all run for pull requests and `main`; verify workflow linting and local commands pass
 - [x] 5.2 Add independent `v*` tag production workflows for Terraform apply, Neon migration plus Wrangler backend rollout, and Pages deployment; verify each checks out the tagged revision, uses the protected environment, performs focused smoke verification, and passes workflow linting
 - [ ] 5.3 Add a protected production environment and required CI branch check without storing secrets in repository files; verify GitHub reports the intended policy
 

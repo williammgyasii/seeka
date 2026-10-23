@@ -9,9 +9,9 @@ architecture or relying on manual dashboard configuration.
 
 - Move the repository to the authenticated personal GitHub account as a public
   repository.
-- Add independent component CI workflows that build and test the frontend,
-  backend, edge adapter, and Terraform configuration on pull requests and
-  commits to `main`.
+- Add independent component CI workflows that each build and test the frontend,
+  backend, edge adapter, and Terraform configuration on every pull request and
+  commit to `main`.
 - Add independent infrastructure, backend, and frontend CD workflows that
   deploy the exact revision named by an immutable `v*` release tag; commits to
   `main` never deploy directly.

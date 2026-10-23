@@ -44,10 +44,10 @@ release tags, and branch policy become the ongoing delivery controls.
 
 ### Separate CI and CD by deployable component
 
-Backend, frontend, edge, and infrastructure CI workflows have path filters and
-no cloud mutation permission. They restore only their own dependencies and run
-focused tests, builds, lint, OpenSpec, Terraform, or container checks on pull
-requests and commits to `main`.
+Backend, frontend, edge, and infrastructure CI workflows have no cloud mutation
+permission. Each workflow runs on every pull request and commit to `main`, while
+restoring only its own dependencies and running focused tests, builds, lint,
+OpenSpec, Terraform, or container checks.
 
 Infrastructure, backend, and frontend CD workflows independently receive scoped
 credentials through the protected production environment and run only for

@@ -2,15 +2,9 @@ name: Frontend CI
 
 on:
   pull_request:
-    paths:
-      - "seeka-frontend/**"
-      - ".github/workflows/frontend-*.yml"
   push:
     branches:
       - main
-    paths:
-      - "seeka-frontend/**"
-      - ".github/workflows/frontend-*.yml"
 
 permissions:
   contents: read

@@ -2,25 +2,9 @@ name: Edge CI
 
 on:
   pull_request:
-    paths:
-      - "Seeka.slnx"
-      - "seeka-backend/**"
-      - "seeka-edge/**"
-      - ".dockerignore"
-      - ".github/workflows/edge-ci.yml"
-      - ".github/workflows/backend-deploy.yml"
-      - ".github/workflows/frontend-deploy.yml"
   push:
     branches:
       - main
-    paths:
-      - "Seeka.slnx"
-      - "seeka-backend/**"
-      - "seeka-edge/**"
-      - ".dockerignore"
-      - ".github/workflows/edge-ci.yml"
-      - ".github/workflows/backend-deploy.yml"
-      - ".github/workflows/frontend-deploy.yml"
 
 permissions:
   contents: read
