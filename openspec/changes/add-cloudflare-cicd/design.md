@@ -67,6 +67,8 @@ Terraform owns the Pages Direct Upload project, the Worker identity, and stable
 account-level configuration. Wrangler owns generated Worker versions,
 deployments, container images, rollouts, and Pages deployment artifacts.
 Terraform and Wrangler never manage the same version/deployment object.
+Terraform ignores only the Pages `wrangler_config_hash` that Wrangler writes
+after an artifact deployment, while continuing to reconcile service bindings.
 
 The Direct Upload choice is deliberate: GitHub Actions is the build authority,
 so Cloudflare Git integration would create a second deployment path.
