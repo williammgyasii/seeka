@@ -2,19 +2,9 @@ name: Backend CI
 
 on:
   pull_request:
-    paths:
-      - "Seeka.slnx"
-      - "seeka-backend/**"
-      - "seeka-backend.Tests/**"
-      - ".github/workflows/backend-*.yml"
   push:
     branches:
       - main
-    paths:
-      - "Seeka.slnx"
-      - "seeka-backend/**"
-      - "seeka-backend.Tests/**"
-      - ".github/workflows/backend-*.yml"
 
 permissions:
   contents: read
