@@ -24,6 +24,13 @@ resource "cloudflare_pages_project" "web" {
   name              = "seeka"
   production_branch = var.production_branch
 
+  lifecycle {
+    ignore_changes = [
+      deployment_configs.preview.wrangler_config_hash,
+      deployment_configs.production.wrangler_config_hash,
+    ]
+  }
+
   deployment_configs = {
     preview = {
       compatibility_date = "2026-10-23"
