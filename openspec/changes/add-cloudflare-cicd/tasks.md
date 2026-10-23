@@ -20,19 +20,19 @@
 ## 4. Terraform infrastructure
 
 - [x] 4.1 Add version-pinned Cloudflare Terraform configuration for the Pages project, Worker identity, and stable bindings with no secrets in state inputs; verify format, init, validate, and provider lock-file checks pass
-- [ ] 4.2 Add the R2 S3 backend with native lockfile plus a documented one-time private-bucket bootstrap; verify concurrent state access is rejected
+- [x] 4.2 Add the R2 S3 backend with native lockfile plus a documented one-time private-bucket bootstrap; verify concurrent state access is rejected
 - [x] 4.3 Add Terraform tests or mock-provider plans for names, public-route disablement, Direct Upload ownership, and service binding; verify the focused infrastructure checks pass
 
 ## 5. GitHub Actions
 
 - [x] 5.1 Split least-privilege CI into backend, frontend, edge, infrastructure, and repository-policy workflows that all run for pull requests and `main`; verify workflow linting and local commands pass
 - [x] 5.2 Add independent `v*` tag production workflows for Terraform apply, Neon migration plus Wrangler backend rollout, and Pages deployment; verify each checks out the tagged revision, uses the protected environment, performs focused smoke verification, and passes workflow linting
-- [ ] 5.3 Add a protected production environment and required CI branch check without storing secrets in repository files; verify GitHub reports the intended policy
+- [x] 5.3 Add a protected production environment and required CI branch check without storing secrets in repository files; verify GitHub reports the intended policy
 
 ## 6. Provision and verify
 
-- [ ] 6.1 Create narrowly scoped Cloudflare and R2 credentials and store Cloudflare, Terraform-state, and Neon values in the GitHub production environment; verify only secret names and access policy are observable
-- [ ] 6.2 Bootstrap R2 and apply the reviewed Terraform plan; verify Pages, Worker identity, binding, and generated endpoints match state
+- [x] 6.1 Store the Cloudflare and Neon values in the GitHub production environment and derive masked, one-hour, bucket-scoped R2 state credentials during infrastructure deployment; verify only long-lived secret names and access policy are observable
+- [x] 6.2 Bootstrap R2 and apply the reviewed Terraform plan; verify Pages, Worker identity, binding, and generated endpoints match state
 - [ ] 6.3 Provision stable infrastructure before the first release, publish an approved `v*` tag, and verify the independent deployments plus registration, sign-in, persistence, health, and container-restart session continuity through the Pages URL
-- [ ] 6.4 Document setup, ownership boundaries, costs, rollback, secret rotation, and the Hangfire limitation; verify a clean operator can reproduce all non-secret steps
+- [x] 6.4 Document setup, ownership boundaries, costs, rollback, secret rotation, and the Hangfire limitation; verify a clean operator can reproduce all non-secret steps
 - [ ] 6.5 Run all checks, validate OpenSpec strictly, update task status, create the approved split commits by concern, and stop before push pending explicit approval

@@ -17,14 +17,20 @@ Create the private state bucket with an authenticated Wrangler session:
 wrangler r2 bucket create seeka-terraform-state
 ```
 
-Create a narrowly scoped R2 S3 credential for this bucket in Cloudflare, then
-export it without writing it to the repository:
+For local administration, derive short-lived credentials restricted to this
+bucket from an authorised parent R2 token and export them without writing them
+to the repository:
 
 ```bash
 export AWS_ACCESS_KEY_ID=...
 export AWS_SECRET_ACCESS_KEY=...
+export AWS_SESSION_TOKEN=...
 export AWS_ENDPOINT_URL_S3=https://$CLOUDFLARE_ACCOUNT_ID.r2.cloudflarestorage.com
 ```
+
+Production CI requests one-hour `object-read-write` credentials from
+Cloudflare's R2 temporary-credentials API immediately before Terraform runs.
+Only the parent deployment token is stored in the protected GitHub environment.
 
 The backend uses Terraform's native S3 lockfile. R2 provides strongly consistent
 conditional object writes, so concurrent applies cannot both acquire the lock.
