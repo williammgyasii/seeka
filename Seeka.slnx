@@ -1,0 +1,6 @@
+<Solution>
+  <Folder Name="/seeka-backend.Tests/">
+    <Project Path="seeka-backend.Tests/Seeka.Backend.Tests.csproj" />
+  </Folder>
+  <Project Path="seeka-backend/seeka-backend.csproj" />
+</Solution>

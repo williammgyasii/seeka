@@ -1,0 +1,6 @@
+@seeka_backend_HostAddress = http://localhost:5099
+
+GET {{seeka_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
