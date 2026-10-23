@@ -1,0 +1,20 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: seeka-backend/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Seeka: ${ConnectionStrings__Seeka:?Set ConnectionStrings__Seeka in .env}
+    ports:
+      - "${API_PORT:-5099}:8080"
+
+  web:
+    build:
+      context: .
+      dockerfile: seeka-frontend/Dockerfile
+    ports:
+      - "${WEB_PORT:-5173}:80"
+    depends_on:
+      - api

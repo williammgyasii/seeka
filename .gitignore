@@ -1,0 +1,32 @@
+# Local secrets
+.env
+.env.*
+!.env.example
+**/.dev.vars
+**/.dev.vars.*
+
+# .NET
+**/bin/
+**/obj/
+*.user
+
+# Node
+**/node_modules/
+**/dist/
+**/.wrangler/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
