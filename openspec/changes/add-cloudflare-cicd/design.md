@@ -75,8 +75,10 @@ so Cloudflare Git integration would create a second deployment path.
 
 Create one private `seeka-terraform-state` R2 bucket as a documented bootstrap
 step, then use Terraform's S3 backend with R2's endpoint and native lockfile.
-State credentials live only in local/GitHub secrets. Provider versions and the
-dependency lock file are committed; plans contain no secret variables.
+Infrastructure CD mints one-hour, bucket-scoped R2 credentials from the
+protected deployment token and masks them; long-lived S3 credentials are not
+stored in GitHub. Provider versions and the dependency lock file are committed;
+plans contain no secret variables.
 
 ### Keep the browser same-origin through a Pages Function
 

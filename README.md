@@ -166,13 +166,14 @@ The protected GitHub `production` environment requires:
 
 - variable `CLOUDFLARE_ACCOUNT_ID`;
 - variable `CLOUDFLARE_PAGES_URL`;
-- secrets `CLOUDFLARE_API_TOKEN`, `R2_ACCESS_KEY_ID`,
-  `R2_SECRET_ACCESS_KEY`, and `NEON_CONNECTION_STRING`.
+- secrets `CLOUDFLARE_API_TOKEN` and `NEON_CONNECTION_STRING`.
 
-The Cloudflare token must be deployment-scoped. R2 credentials must be limited
-to object read/write access on `seeka-terraform-state`; rotate them in
-Cloudflare and GitHub together. Never place credentials in Terraform variables,
-plans, repository files, logs, or browser environment variables.
+The Cloudflare token must be deployment-scoped and permitted to delegate R2
+access. Infrastructure CD derives one-hour credentials restricted to object
+read/write access on `seeka-terraform-state`; it masks them and never stores
+them as GitHub secrets. Rotate the parent token in Cloudflare and GitHub
+together. Never place credentials in Terraform variables, plans, repository
+files, logs, or browser environment variables.
 
 Release rollback means restoring a previous Pages deployment and Worker
 version. Database migrations are forward-only release steps and must use
