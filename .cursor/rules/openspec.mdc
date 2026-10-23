@@ -1,0 +1,9 @@
+---
+alwaysApply: true
+---
+
+# OpenSpec
+
+Follow the global OpenSpec workflow for this project. Treat `openspec/specs/`
+and `openspec/changes/` as the source of truth, and use the generated
+`.cursor/commands/opsx-*.md` commands for OpenSpec work.
