@@ -33,6 +33,6 @@
 
 - [x] 6.1 Store the Cloudflare and Neon values in the GitHub production environment and derive masked, one-hour, bucket-scoped R2 state credentials during infrastructure deployment; verify only long-lived secret names and access policy are observable
 - [x] 6.2 Bootstrap R2 and apply the reviewed Terraform plan; verify Pages, Worker identity, binding, and generated endpoints match state
-- [ ] 6.3 Provision stable infrastructure before the first release, publish an approved `v*` tag, and verify the independent deployments plus registration, sign-in, persistence, health, and container-restart session continuity through the Pages URL
+- [x] 6.3 Provision stable infrastructure before the first release, publish an approved `v*` tag, and verify the independent deployments plus registration, sign-in, persistence, health, and container-restart session continuity through the Pages URL
 - [x] 6.4 Document setup, ownership boundaries, costs, rollback, secret rotation, and the Hangfire limitation; verify a clean operator can reproduce all non-secret steps
-- [ ] 6.5 Run all checks, validate OpenSpec strictly, update task status, create the approved split commits by concern, and stop before push pending explicit approval
+- [x] 6.5 Run all checks, validate OpenSpec strictly, update task status, create the approved split commits by concern, and publish them with the user's explicit end-to-end approval
