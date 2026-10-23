@@ -145,7 +145,7 @@ Next integration order:
 Production uses Cloudflare Pages for the React application and a private Worker
 that routes to the ASP.NET Core Cloudflare Container. A Pages Function proxies
 `/api/*` through a service binding, so secure cookies remain on the generated
-`https://seeka.pages.dev` origin. Terraform under `infra/cloudflare` owns stable
+`https://seeka-cth.pages.dev` origin. Terraform under `infra/cloudflare` owns stable
 Pages and Worker identities; Wrangler owns application versions, container
 images, and Pages artifacts.
 
@@ -165,6 +165,7 @@ independent and may finish in any order.
 The protected GitHub `production` environment requires:
 
 - variable `CLOUDFLARE_ACCOUNT_ID`;
+- variable `CLOUDFLARE_PAGES_URL`;
 - secrets `CLOUDFLARE_API_TOKEN`, `R2_ACCESS_KEY_ID`,
   `R2_SECRET_ACCESS_KEY`, and `NEON_CONNECTION_STRING`.
 

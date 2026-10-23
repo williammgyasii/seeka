@@ -82,9 +82,11 @@ dependency lock file are committed; plans contain no secret variables.
 
 The Pages deployment includes a catch-all `/api/*` Function with a service
 binding to the private API Worker. It forwards the request and response without
-changing cookie headers. The browser therefore sees only `seeka.pages.dev`, and
-the existing relative API client remains unchanged. The Worker disables its
-public `workers.dev` route.
+changing cookie headers. The browser therefore sees only the generated
+`pages.dev` origin, and the existing relative API client remains unchanged. The
+generated Pages subdomain is recorded as a deployment variable rather than
+assumed from the project name. The Worker disables its public `workers.dev`
+route.
 
 ### Route to one named ASP.NET Container instance
 
