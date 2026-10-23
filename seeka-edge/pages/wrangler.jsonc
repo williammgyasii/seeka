@@ -1,0 +1,12 @@
+{
+  "$schema": "../node_modules/wrangler/config-schema.json",
+  "name": "seeka",
+  "compatibility_date": "2026-10-23",
+  "pages_build_output_dir": "../../seeka-frontend/dist",
+  "services": [
+    {
+      "binding": "SEEKA_API",
+      "service": "seeka-api"
+    }
+  ]
+}
