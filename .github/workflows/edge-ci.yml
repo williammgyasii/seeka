@@ -1,0 +1,65 @@
+name: Edge CI
+
+on:
+  pull_request:
+    paths:
+      - "Seeka.slnx"
+      - "seeka-backend/**"
+      - "seeka-edge/**"
+      - ".dockerignore"
+      - ".github/workflows/edge-ci.yml"
+      - ".github/workflows/backend-deploy.yml"
+      - ".github/workflows/frontend-deploy.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "Seeka.slnx"
+      - "seeka-backend/**"
+      - "seeka-edge/**"
+      - ".dockerignore"
+      - ".github/workflows/edge-ci.yml"
+      - ".github/workflows/backend-deploy.yml"
+      - ".github/workflows/frontend-deploy.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: edge-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Edge
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: seeka-edge/package-lock.json
+
+      - name: Install
+        run: npm ci
+        working-directory: seeka-edge
+
+      - name: Test adapters
+        run: npm test
+        working-directory: seeka-edge
+
+      - name: Check generated Worker types
+        run: |
+          npm run types
+          git diff --exit-code -- worker-configuration.d.ts
+          npm run typecheck
+        working-directory: seeka-edge
+
+      - name: Dry-run Worker and container build
+        run: npx wrangler deploy --dry-run --outdir dist
+        working-directory: seeka-edge

@@ -1,0 +1,37 @@
+name: Repository CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  policy:
+    name: Repository policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Validate GitHub Actions
+        uses: docker://rhysd/actionlint:1.7.7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
+      - name: Install OpenSpec
+        run: npm install --global @fission-ai/openspec@1.14.3
+
+      - name: Validate OpenSpec
+        run: openspec validate --all --strict

@@ -1,0 +1,52 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    paths:
+      - "seeka-frontend/**"
+      - ".github/workflows/frontend-*.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "seeka-frontend/**"
+      - ".github/workflows/frontend-*.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: frontend-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: seeka-frontend/package-lock.json
+
+      - name: Install
+        run: npm ci
+        working-directory: seeka-frontend
+
+      - name: Test
+        run: npm test
+        working-directory: seeka-frontend
+
+      - name: Lint
+        run: npm run lint
+        working-directory: seeka-frontend
+
+      - name: Build
+        run: npm run build
+        working-directory: seeka-frontend
