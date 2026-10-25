@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Seeka.Api.Http;
 using Seeka.Managers;
@@ -38,7 +39,15 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
     options.ExpireTimeSpan = TimeSpan.FromHours(12);
 });
-builder.Services.AddAuthorization();
+var emailVerified = new AuthorizationPolicyBuilder()
+    .RequireAuthenticatedUser()
+    .AddRequirements(new EmailVerifiedRequirement())
+    .Build();
+builder.Services.AddAuthorizationBuilder()
+    .SetDefaultPolicy(emailVerified)
+    .SetFallbackPolicy(emailVerified)
+    .AddPolicy(AuthPolicies.SignedIn, policy => policy.RequireAuthenticatedUser());
+builder.Services.AddScoped<IAuthorizationHandler, EmailVerifiedHandler>();
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
@@ -70,7 +79,7 @@ app.Use(async (context, next) =>
 
     await next(context);
 });
-if (app.Environment.IsDevelopment()) app.MapOpenApi();
+if (app.Environment.IsDevelopment()) app.MapOpenApi().AllowAnonymous();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseRateLimiter();

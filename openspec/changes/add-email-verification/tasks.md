@@ -1,19 +1,19 @@
 ## 1. Backend: email boundary
 
-- [ ] 1.1 Write failing `AccountEmailsTests`: the verification email names the person, contains the link in both text and HTML, and HTML-encodes the name; verify they fail, implement the engine, verify they pass
-- [ ] 1.2 Add `IEmailAccess` and `OutgoingEmail`; write failing `CloudflareEmailAccessTests` against a stub `HttpMessageHandler` (bearer header, account URL, `from.address`, text and HTML, failure on 429 and 5xx); implement and verify they pass
-- [ ] 1.3 Add `LoggingEmailAccess` and register it when no token is configured; verify `ArchitectureTests` still pass
+- [x] 1.1 Write failing `AccountEmailsTests`: the verification email names the person, contains the link in both text and HTML, and HTML-encodes the name; verify they fail, implement the engine, verify they pass
+- [x] 1.2 Add `IEmailAccess` and `OutgoingEmail`; write failing `CloudflareEmailAccessTests` against a stub `HttpMessageHandler` (bearer header, account URL, `from.address`, text and HTML, failure on 429 and 5xx); implement and verify they pass
+- [x] 1.3 Add `LoggingEmailAccess` and register it when no token is configured; verify `ArchitectureTests` still pass
 
 ## 2. Backend: verification use cases
 
-- [ ] 2.1 Write failing `MembershipManagerTests`: registration sends one verification email to the new address; a provider failure still returns the session; verify they fail, implement, verify they pass
-- [ ] 2.2 Write failing tests for resend (sends to the current address), correct-address (rejects verified accounts, rejects an address in use with an `email` error, sends to the new address), and verify (valid token confirms; a wrong or expired token does not); implement in the manager and `AccountAccess`, verify they pass
-- [ ] 2.3 Add `emailVerified` to `SessionResponse`; extend `AccountSessionTests` to cover it; verify the test passes
+- [x] 2.1 Write failing `MembershipManagerTests`: registration sends one verification email to the new address; a provider failure still returns the session; verify they fail, implement, verify they pass
+- [x] 2.2 Write failing tests for resend (sends to the current address), correct-address (rejects verified accounts, rejects an address in use with an `email` error, sends to the new address), and verify (valid token confirms; a wrong or expired token does not); implement in the manager and `AccountAccess`, verify they pass
+- [x] 2.3 Add `emailVerified` to `SessionResponse`; extend `AccountSessionTests` to cover it; verify the test passes
 
 ## 3. Backend: the gate
 
-- [ ] 3.1 Write a failing API test with `WebApplicationFactory`: an unverified session gets 403 from `GET /api/pipeline` and 200 from `GET /api/auth/session`; a verified session gets 200 from both; verify it fails
-- [ ] 3.2 Add the `EmailVerified` fallback policy and the `SignedIn` policy on the auth endpoints, plus the resend, correct-address, and verify endpoints; verify the API test and all backend tests pass
+- [x] 3.1 Write a failing API test with `WebApplicationFactory`: an unverified session gets 403 from `GET /api/pipeline` and 200 from `GET /api/auth/session`; a verified session gets 200 from both; verify it fails
+- [x] 3.2 Add the `EmailVerified` fallback policy and the `SignedIn` policy on the auth endpoints, plus the resend, correct-address, and verify endpoints; verify the API test and all backend tests pass
 
 ## 4. Frontend
 
