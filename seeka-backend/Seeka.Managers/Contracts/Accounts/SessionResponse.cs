@@ -5,4 +5,5 @@ public sealed record SessionResponse(
     string Email,
     string DisplayName,
     Guid WorkspaceId,
-    bool OnboardingComplete);
+    bool OnboardingComplete,
+    bool EmailVerified);
