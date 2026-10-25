@@ -42,7 +42,11 @@ actions are tied to the session.
 
 ### The gate is a default authorization policy that reads the database
 
-- A requirement `EmailVerified` becomes the fallback policy for `[Authorize]`.
+- A requirement `EmailVerified` becomes both the default policy (what a bare
+  `[Authorize]` uses) and the fallback policy (endpoints with no attribute at
+  all). ASP.NET only applies the fallback to endpoints without authorization
+  metadata, so setting only the fallback would leave every `[Authorize]`
+  controller ungated.
 - Endpoints a person needs before verifying are marked
   `[Authorize(Policy = Policies.SignedIn)]`, which only checks the session:
   - `GET /api/auth/session`
@@ -72,8 +76,10 @@ production runs a worker.
   token. It treats 429 and 5xx as failures to log; there is no retry loop inside
   a request.
 - `LoggingEmailAccess` writes the recipient and the link to the log. It is
-  registered when no token is configured, which covers local development and
-  tests.
+  registered only in Development without a token (`EmailDeliveryPolicy`). In any
+  other environment a missing token fails when email is first needed, because a
+  logged link is a live credential in production logs. The failure is lazy, not
+  at startup, so `--migrate` runs without the token.
 
 Message wording is policy, so it lives in an engine:
 `Seeka.Engines/Accounts/AccountEmails.Verification(displayName, link)` returns
@@ -127,8 +133,11 @@ works signed out.
 2. Store it as the `EMAIL_API_TOKEN` GitHub environment secret.
 3. Map the secret in `backend-deploy.yml` with `wrangler secret put`, and in
    `containerEnvironment()` as `Email__CloudflareApiToken`.
-4. Set `Email__CloudflareAccountId`, `Email__From`, and `App__PublicUrl` as
-   non-secret variables.
+4. Pass the existing `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_PAGES_URL` GitHub
+   variables to `wrangler deploy --var` as `EMAIL_ACCOUNT_ID` and
+   `APP_PUBLIC_URL`; the Worker maps them to `Email__CloudflareAccountId` and
+   `App__PublicUrl`. `Email:FromAddress` (default `verify@seekajobs.tech`) and
+   `Email:FromName` (default `Seeka`) only need setting to override.
 
 No schema migration. Rollback: redeploy the previous image. `EmailConfirmed`
 values that were set stay harmless.
