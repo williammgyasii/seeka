@@ -8,14 +8,11 @@ record of what happened.
 
 ### Requirement: Secure personal workspace access
 
-The system SHALL let a person register and sign in using a secure server-managed
-session, SHALL create a personal workspace for a new account, and SHALL
-authorise every resource through the authenticated user's active membership.
-Registration SHALL require a full name, email, password, and a phone number that
-is valid for its country, and SHALL store the phone number in E.164 format. The
-web app SHALL send signed-out visitors on protected pages to sign-in. The API
-SHALL rate-limit every endpoint per caller and SHALL apply a stricter limit to
-sign-in and registration.
+The system SHALL let a person register and sign in with a secure server-managed
+session, SHALL create a personal workspace for each new account, and SHALL
+authorise every resource through the user's active membership. Registration
+SHALL require a full name and a valid phone number. The API SHALL rate-limit
+every endpoint.
 
 #### Scenario: New account receives a personal workspace
 - **WHEN** a person registers with a valid full name, email, password, and phone number
