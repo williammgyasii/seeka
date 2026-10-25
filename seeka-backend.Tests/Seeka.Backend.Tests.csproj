@@ -20,7 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\seeka-backend\seeka-backend.csproj" />
+    <ProjectReference Include="..\seeka-backend\Seeka.Api\Seeka.Api.csproj" />
+    <ProjectReference Include="..\seeka-backend\Seeka.Engines\Seeka.Engines.csproj" />
+    <ProjectReference Include="..\seeka-backend\Seeka.Managers\Seeka.Managers.csproj" />
+    <ProjectReference Include="..\seeka-backend\Seeka.ResourceAccess\Seeka.ResourceAccess.csproj" />
   </ItemGroup>
 
 </Project>

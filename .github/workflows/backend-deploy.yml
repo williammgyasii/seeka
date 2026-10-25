@@ -51,7 +51,7 @@ jobs:
       - name: Apply database migrations
         env:
           ConnectionStrings__Seeka: ${{ secrets.NEON_CONNECTION_STRING }}
-        run: dotnet run --project seeka-backend --configuration Release -- --migrate
+        run: dotnet run --project seeka-backend/Seeka.Api --configuration Release -- --migrate
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
