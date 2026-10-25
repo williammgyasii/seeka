@@ -55,10 +55,10 @@ jobs:
           npm run build
         working-directory: seeka-frontend
 
-      - name: Verify Pages proxy
+      - name: Verify Pages functions
         run: |
           npm ci
-          npx vitest run test/pages-proxy.test.ts
+          npx vitest run test/pages-proxy.test.ts test/canonical-host.test.ts
         working-directory: seeka-edge
 
       - name: Deploy Pages
