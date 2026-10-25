@@ -32,7 +32,8 @@ export function ConfirmEmailPage() {
                 This link has expired or is invalid.
               </h1>
               <p className="text-muted-foreground">
-                Links last 24 hours, and only the newest one works. Request a new one.
+                Links last 24 hours, and changing your address cancels earlier ones. Request a
+                new one.
               </p>
               <Button asChild>
                 <Link to="/verify-email">Get a new link</Link>
