@@ -73,4 +73,24 @@ describe('Protected pages', () => {
       await screen.findByRole('heading', { name: /give assessments reliable facts/i }),
     ).toBeInTheDocument()
   })
+
+  it('show onboarding as its own page, without app navigation but with sign-out', async () => {
+    respond('get', '/api/auth/session', { ...session, onboardingComplete: false })
+    renderAt('/onboarding')
+
+    await screen.findByRole('heading', { name: /give assessments reliable facts/i })
+    expect(screen.queryByRole('link', { name: /pipeline/i })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /dashboard/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument()
+  })
+
+  it('send a user who finished onboarding from onboarding to the dashboard', async () => {
+    respond('get', '/api/auth/session', session)
+    respond('get', '/api/pipeline', [])
+    renderAt('/onboarding')
+
+    expect(
+      await screen.findByRole('heading', { name: /your remote job search/i }),
+    ).toBeInTheDocument()
+  })
 })
