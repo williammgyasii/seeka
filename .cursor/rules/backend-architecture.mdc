@@ -35,7 +35,7 @@ Seeka.Api  -->  Seeka.ResourceAccess   (composition root only)
 
 | Manager | Owns | Changes when |
 |---|---|---|
-| `MembershipManager` | register, sign in and out, session, candidate setup | onboarding and search intent change |
+| `MembershipManager` | register, sign in and out, session, email verification (send, resend, correct, confirm), candidate setup | onboarding and search intent change |
 | `JobSearchManager` | import, pipeline, job detail, stage, activity | sourcing and fit verdicts change |
 | `OutreachManager` | contacts, drafts, draft edits | insider discovery and tailoring change |
 
@@ -46,6 +46,8 @@ Add a method to the manager that owns the volatility. Add a new manager only for
 - New policy (scoring, verdicts, normalization that decides identity): an engine in `Seeka.Engines/<Area>/`.
 - New external provider (OpenAI, enrichment, ATS): an interface in `Seeka.Managers/Access/<Provider>/`, implemented in `Seeka.ResourceAccess/Accessors/`.
 - New HTTP route: an action on the controller for that manager, with `[HttpGet]`, `[HttpPost]`, and so on. No `Map*` minimal endpoints. Every route is under the global rate limit in `Http/ApiRateLimits` (per user ID when signed in, else per IP); credential endpoints also carry `[EnableRateLimiting(ApiRateLimits.Auth)]`. `UseAuthentication()` must stay before `UseRateLimiter()`.
+- Authorization: a bare `[Authorize]` means signed in **and** email verified (the default and fallback policy, `EmailVerifiedHandler` reads the database). Only endpoints a person needs before verifying use `[Authorize(Policy = AuthPolicies.SignedIn)]`. Never add a workspace endpoint with the `SignedIn` policy.
+- Email goes through `IEmailAccess` (`CloudflareEmailAccess`, or `LoggingEmailAccess` in Development only, chosen by `EmailDeliveryPolicy`). It returns `false` on failure and never throws; message wording lives in `Seeka.Engines/Accounts/AccountEmails`.
 - One top-level type per file. The file name matches the type.
 
 ```csharp
@@ -67,4 +69,5 @@ await jobSearch.FindJobAsync(User.RequireUserId(), savedJobId, ct);
 - Engines: plain unit tests.
 - Managers: unit tests with fakes from `seeka-backend.Tests/Fakes/`.
 - Accessors: tests against the EF in-memory provider or PostgreSQL.
+- HTTP behaviour (status codes, policies, cookies): `WebApplicationFactory` tests through `Fakes/SeekaApiFactory`, which swaps in EF in-memory and a capturing `FakeEmailAccess`.
 - `ArchitectureTests` must stay green. Do not weaken a rule to make a change pass. Move the code instead.

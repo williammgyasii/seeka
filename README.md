@@ -10,9 +10,14 @@ and truthful outreach drafting.
 - ASP.NET Core Identity registration (full name and a required phone number,
   validated with libphonenumber and stored as unverified E.164), cookie
   sign-in, lockout, and personal workspace creation
+- Email verification through Cloudflare Email Sending
+  (`Seeka <verify@seekajobs.tech>`): registration sends a one-day link, and every
+  workspace endpoint returns 403 until the address is verified. Unverified users
+  stay signed in and can resend the link or correct a mistyped address.
 - Frontend route guards: signed-out visitors go to sign-in and return to the
-  page they asked for; accounts without a candidate profile go to onboarding.
-  The API's `[Authorize]` remains the actual lock.
+  page they asked for; unverified accounts go to check-your-inbox, then accounts
+  without a candidate profile go to onboarding. The API's `[Authorize]` remains
+  the actual lock.
 - Workspace-scoped candidate profiles and job preferences
 - Manual job import with source provenance and URL-scheme validation
 - Rules-based geographic eligibility with evidence and conflict detection
@@ -92,6 +97,21 @@ cd seeka-frontend
 npm install
 npm run dev
 ```
+
+Without an email token, Development writes verification links to the API log
+instead of sending them; open the logged link to verify. To send real mail
+locally, keep the Email Sending token in the macOS Keychain and copy it into
+user secrets:
+
+```bash
+dotnet user-secrets set "Email:CloudflareAccountId" "<cloudflare-account-id>" \
+  --project seeka-backend/Seeka.Api
+dotnet user-secrets set "Email:CloudflareApiToken" \
+  "$(security find-generic-password -s cloudflare-seeka-email-sending -w)" \
+  --project seeka-backend/Seeka.Api
+```
+
+Outside Development the token is required; the API never logs links there.
 
 Vite proxies `/api` to `http://localhost:5099`, keeping browser cookie requests
 same-origin during development. The populated `.env` file and user-secrets store
@@ -195,7 +215,11 @@ The protected GitHub `production` environment requires:
 
 - variable `CLOUDFLARE_ACCOUNT_ID`;
 - variable `CLOUDFLARE_PAGES_URL`;
-- secrets `CLOUDFLARE_API_TOKEN` and `NEON_CONNECTION_STRING`.
+- secrets `CLOUDFLARE_API_TOKEN` and `NEON_CONNECTION_STRING`;
+- secret `EMAIL_API_TOKEN`, a separate Cloudflare token scoped to Email Sending.
+  The backend release puts it in the Worker with `wrangler secret put`, and passes
+  `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_PAGES_URL` as Worker variables; the
+  Worker hands all three to the container.
 
 The Cloudflare token must be deployment-scoped and permitted to delegate R2
 access. Infrastructure CD derives one-hour credentials restricted to object
