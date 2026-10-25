@@ -28,3 +28,39 @@ run "delivery_resources_have_safe_contracts" {
     error_message = "Pages must bind API traffic to the private Worker."
   }
 }
+
+run "app_is_served_at_the_branded_domain" {
+  command = plan
+
+  override_data {
+    target = data.cloudflare_zone.seeka
+    values = {
+      id = "11111111111111111111111111111111"
+    }
+  }
+
+  assert {
+    condition     = cloudflare_pages_domain.app.name == "app.seekajobs.tech"
+    error_message = "The Pages project must serve app.seekajobs.tech."
+  }
+
+  assert {
+    condition     = cloudflare_pages_domain.app.project_name == "seeka"
+    error_message = "The custom domain must attach to the seeka Pages project."
+  }
+
+  assert {
+    condition     = cloudflare_dns_record.app.zone_id == "11111111111111111111111111111111"
+    error_message = "The DNS record must live in the looked-up seekajobs.tech zone."
+  }
+
+  assert {
+    condition     = cloudflare_dns_record.app.name == "app.seekajobs.tech" && cloudflare_dns_record.app.type == "CNAME"
+    error_message = "app.seekajobs.tech must be a CNAME."
+  }
+
+  assert {
+    condition     = cloudflare_dns_record.app.proxied == true
+    error_message = "The app record must be proxied so Cloudflare terminates TLS."
+  }
+}

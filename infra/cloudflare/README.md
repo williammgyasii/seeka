@@ -4,7 +4,13 @@ Terraform owns stable resource identities and settings:
 
 - the `seeka` Direct Upload Pages project;
 - the private `seeka-api` Worker identity;
-- the Pages-to-Worker service binding.
+- the Pages-to-Worker service binding;
+- the `app.seekajobs.tech` custom domain on the Pages project, and its proxied
+  CNAME in the `seekajobs.tech` zone (looked up by name, so no zone ID is
+  committed).
+
+The deployment token therefore needs Zone Read and DNS Edit on `seekajobs.tech`
+in addition to its account permissions.
 
 Wrangler owns Worker versions, container images and rollouts, and Pages
 deployment artifacts. Do not add those mutable artifacts to Terraform.

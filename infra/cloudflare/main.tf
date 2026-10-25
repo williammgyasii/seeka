@@ -50,3 +50,25 @@ resource "cloudflare_pages_project" "web" {
     }
   }
 }
+
+data "cloudflare_zone" "seeka" {
+  filter = {
+    name = var.zone_name
+  }
+}
+
+resource "cloudflare_pages_domain" "app" {
+  account_id   = var.cloudflare_account_id
+  project_name = cloudflare_pages_project.web.name
+  name         = var.app_hostname
+}
+
+resource "cloudflare_dns_record" "app" {
+  zone_id = data.cloudflare_zone.seeka.id
+  name    = var.app_hostname
+  type    = "CNAME"
+  content = cloudflare_pages_project.web.subdomain
+  proxied = true
+  ttl     = 1
+  comment = "Seeka web app on Cloudflare Pages; managed by Terraform."
+}

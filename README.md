@@ -193,10 +193,13 @@ Next integration order:
 
 Production uses Cloudflare Pages for the React application and a private Worker
 that routes to the ASP.NET Core Cloudflare Container. A Pages Function proxies
-`/api/*` through a service binding, so secure cookies remain on the generated
-`https://seeka-cth.pages.dev` origin. Terraform under `infra/cloudflare` owns stable
-Pages and Worker identities; Wrangler owns application versions, container
-images, and Pages artifacts.
+`/api/*` through a service binding, so secure cookies stay on one origin. The
+app is moving from the generated `https://seeka-cth.pages.dev` address to
+`https://app.seekajobs.tech` in two releases (see
+`openspec/changes/add-app-custom-domain/design.md`). Terraform under
+`infra/cloudflare` owns stable Pages and Worker identities and the custom domain
+with its DNS record; Wrangler owns application versions, container images, and
+Pages artifacts.
 
 Component CI workflows run focused checks for backend, frontend, edge, and
 Terraform changes on pull requests and `main`. Commits to `main` do not deploy.
