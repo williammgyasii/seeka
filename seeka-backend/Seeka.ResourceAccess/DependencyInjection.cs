@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Seeka.Managers.Access.Accounts;
 using Seeka.Managers.Access.Candidates;
+using Seeka.Managers.Access.Email;
 using Seeka.Managers.Access.Jobs;
 using Seeka.Managers.Access.Membership;
 using Seeka.Managers.Access.Outreach;
@@ -53,6 +54,28 @@ public static class DependencyInjection
             .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
         if (BackgroundJobPolicy.ShouldRunHangfireServer(environment.EnvironmentName, configuration))
             services.AddHangfireServer();
+
+        var emailToken = configuration["Email:CloudflareApiToken"];
+        switch (EmailDeliveryPolicy.Choose(environment.EnvironmentName, emailToken))
+        {
+            case EmailDelivery.Cloudflare:
+                services.AddSingleton(new CloudflareEmailSettings(
+                    configuration["Email:CloudflareAccountId"]
+                        ?? throw new InvalidOperationException("Email:CloudflareAccountId is required with a token."),
+                    emailToken!,
+                    configuration["Email:FromAddress"] ?? "verify@seekajobs.tech",
+                    configuration["Email:FromName"] ?? "Seeka"));
+                services.AddHttpClient<IEmailAccess, CloudflareEmailAccess>(client =>
+                    client.Timeout = TimeSpan.FromSeconds(10));
+                break;
+            case EmailDelivery.Log:
+                services.AddScoped<IEmailAccess, LoggingEmailAccess>();
+                break;
+            default:
+                services.AddScoped<IEmailAccess>(_ => throw new InvalidOperationException(
+                    "Email:CloudflareApiToken is required outside Development."));
+                break;
+        }
 
         return services
             .AddScoped<IAccountAccess, AccountAccess>()

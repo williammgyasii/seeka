@@ -73,8 +73,17 @@ jobs:
         run: printf '%s' "$DATABASE_CONNECTION_STRING" | npx wrangler secret put DATABASE_CONNECTION_STRING
         working-directory: seeka-edge
 
+      - name: Configure email secret
+        env:
+          EMAIL_API_TOKEN: ${{ secrets.EMAIL_API_TOKEN }}
+        run: printf '%s' "$EMAIL_API_TOKEN" | npx wrangler secret put EMAIL_API_TOKEN
+        working-directory: seeka-edge
+
       - name: Deploy Worker and container
-        run: npx wrangler deploy
+        run: >-
+          npx wrangler deploy
+          --var "APP_PUBLIC_URL:$CLOUDFLARE_PAGES_URL"
+          --var "EMAIL_ACCOUNT_ID:$CLOUDFLARE_ACCOUNT_ID"
         working-directory: seeka-edge
 
       - name: Smoke test API
