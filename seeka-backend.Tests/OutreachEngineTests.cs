@@ -1,4 +1,4 @@
-using Seeka.Domain.Outreach;
+using Seeka.Engines.Outreach;
 
 namespace Seeka.Backend.Tests;
 

@@ -1,14 +1,15 @@
 using Microsoft.EntityFrameworkCore;
-using Seeka.Application.Jobs;
-using Seeka.Infrastructure;
-using Seeka.Infrastructure.Entities;
+using Seeka.Engines.Pipeline;
+using Seeka.ResourceAccess.Accessors;
+using Seeka.ResourceAccess.Persistence.Entities;
+using Seeka.ResourceAccess.Persistence;
 
 namespace Seeka.Backend.Tests;
 
 public sealed class WorkspaceIsolationTests
 {
     [Fact]
-    public async Task Saved_job_reader_does_not_return_another_workspaces_record()
+    public async Task Pipeline_access_does_not_return_another_workspaces_record()
     {
         var options = new DbContextOptionsBuilder<SeekaDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
@@ -41,9 +42,10 @@ public sealed class WorkspaceIsolationTests
         db.SavedJobs.Add(savedJob);
         await db.SaveChangesAsync();
 
-        var reader = new WorkspaceJobReader(db);
+        var pipeline = new PipelineAccess(db);
 
-        Assert.Null(await reader.FindAsync(otherWorkspaceId, savedJob.Id));
-        Assert.NotNull(await reader.FindAsync(ownerWorkspaceId, savedJob.Id));
+        Assert.Null(await pipeline.FindDetailAsync(otherWorkspaceId, savedJob.Id, default));
+        Assert.NotNull(await pipeline.FindDetailAsync(ownerWorkspaceId, savedJob.Id, default));
+        Assert.Empty(await pipeline.ListAsync(otherWorkspaceId, default));
     }
 }

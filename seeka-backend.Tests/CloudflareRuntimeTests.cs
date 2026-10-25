@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
-using Seeka.Infrastructure;
+using Seeka.Api.Http;
+using Seeka.ResourceAccess.BackgroundJobs;
+using Seeka.ResourceAccess.Persistence;
 
 namespace Seeka.Backend.Tests;
 
@@ -11,7 +13,7 @@ public sealed class CloudflareRuntimeTests
     {
         var configuration = new ConfigurationBuilder().Build();
 
-        var shouldRun = SeekaRuntimePolicy.ShouldRunHangfireServer(
+        var shouldRun = BackgroundJobPolicy.ShouldRunHangfireServer(
             "Cloudflare",
             configuration);
 
@@ -28,7 +30,7 @@ public sealed class CloudflareRuntimeTests
             })
             .Build();
 
-        Assert.False(SeekaRuntimePolicy.ShouldRunHangfireServer(
+        Assert.False(BackgroundJobPolicy.ShouldRunHangfireServer(
             "Development",
             configuration));
     }
@@ -36,7 +38,7 @@ public sealed class CloudflareRuntimeTests
     [Fact]
     public void Proxy_configuration_uses_forwarded_scheme_and_host()
     {
-        var options = SeekaRuntimePolicy.CreateForwardedHeadersOptions();
+        var options = HttpEdgePolicy.CreateForwardedHeadersOptions();
 
         Assert.True(options.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedProto));
         Assert.True(options.ForwardedHeaders.HasFlag(ForwardedHeaders.XForwardedHost));

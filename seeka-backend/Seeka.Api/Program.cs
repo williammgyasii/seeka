@@ -1,0 +1,80 @@
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Identity;
+using Seeka.Api.Http;
+using Seeka.Managers;
+using Seeka.ResourceAccess;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Logging.ClearProviders();
+builder.Logging.AddJsonConsole();
+builder.Services.AddOpenApi();
+builder.Services
+    .AddControllers(options =>
+        options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true)
+    .AddJsonOptions(options =>
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<SeekaExceptionHandler>();
+builder.Services.Configure<ForwardedHeadersOptions>(
+    options =>
+    {
+        var configured = HttpEdgePolicy.CreateForwardedHeadersOptions();
+        options.ForwardedHeaders = configured.ForwardedHeaders;
+        options.ForwardLimit = configured.ForwardLimit;
+        options.KnownIPNetworks.Clear();
+        options.KnownProxies.Clear();
+    });
+builder.Services
+    .AddAuthentication(IdentityConstants.ApplicationScheme)
+    .AddIdentityCookies();
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.Cookie.Name = "__Host-seeka-session";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromHours(12);
+});
+builder.Services.AddAuthorization();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.GlobalLimiter = ApiRateLimits.CreateGlobal();
+    options.AddPolicy(ApiRateLimits.Auth, ApiRateLimits.AuthPartition);
+});
+builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSeekaResourceAccess(builder.Configuration, builder.Environment);
+builder.Services.AddSeekaManagers();
+
+var app = builder.Build();
+if (args.Contains("--migrate", StringComparer.OrdinalIgnoreCase))
+{
+    await app.Services.MigrateSeekaDatabaseAsync();
+    return;
+}
+
+app.UseForwardedHeaders();
+app.UseExceptionHandler();
+app.Use(async (context, next) =>
+{
+    var fetchSite = context.Request.Headers["Sec-Fetch-Site"].ToString();
+    if (!SameOriginRequestPolicy.IsAllowed(context.Request.Method, fetchSite))
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return;
+    }
+
+    await next(context);
+});
+if (app.Environment.IsDevelopment()) app.MapOpenApi();
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseRateLimiter();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
+
+public partial class Program;
