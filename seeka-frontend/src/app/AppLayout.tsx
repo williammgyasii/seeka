@@ -1,16 +1,9 @@
-import {
-  BriefcaseBusiness,
-  CircleUserRound,
-  LayoutDashboard,
-  LogOut,
-  Search,
-  Settings,
-} from 'lucide-react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { useSignOutMutation } from '@/features/auth/authApi'
+import { BriefcaseBusiness, CircleUserRound, LayoutDashboard, Search, Settings } from 'lucide-react'
+import { NavLink, Outlet } from 'react-router-dom'
 import { useGetSessionQuery } from '@/shared/api'
 import { cn } from '@/shared/lib/utils'
-import { Brand, Button } from '@/shared/ui'
+import { Brand } from '@/shared/ui'
+import { SignOutButton } from './SignOutButton'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -20,9 +13,7 @@ const navItems = [
 ]
 
 export function AppLayout() {
-  const navigate = useNavigate()
   const session = useGetSessionQuery()
-  const [signOut] = useSignOutMutation()
 
   return (
     <div className="min-h-screen bg-muted/40">
@@ -73,16 +64,7 @@ export function AppLayout() {
               <p className="text-xs text-muted-foreground">{session.data?.email}</p>
             </div>
             <CircleUserRound className="text-muted-foreground" />
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Sign out"
-              onClick={async () => {
-                if (!(await signOut()).error) navigate('/login')
-              }}
-            >
-              <LogOut />
-            </Button>
+            <SignOutButton />
           </div>
         </header>
         <main className="mx-auto max-w-7xl p-5 lg:p-8">
