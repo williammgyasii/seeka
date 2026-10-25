@@ -9,6 +9,18 @@ variable "cloudflare_api_token" {
   sensitive   = true
 }
 
+variable "zone_name" {
+  description = "Cloudflare zone that holds the branded app hostname."
+  type        = string
+  default     = "seekajobs.tech"
+}
+
+variable "app_hostname" {
+  description = "Branded production hostname for the web app."
+  type        = string
+  default     = "app.seekajobs.tech"
+}
+
 variable "production_branch" {
   description = "Git revision allowed to publish production deployments."
   type        = string
