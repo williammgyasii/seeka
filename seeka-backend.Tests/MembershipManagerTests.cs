@@ -1,4 +1,5 @@
 using Seeka.Backend.Tests.Fakes;
+using Seeka.Managers.Access.Accounts;
 using Seeka.Managers.Contracts.Accounts;
 using Seeka.Managers.Contracts.Candidates;
 using Seeka.Managers.Membership;
@@ -79,6 +80,144 @@ public sealed class MembershipManagerTests
         Assert.Equal("USD", candidates.Saved.CompensationCurrency);
     }
 
-    private static MembershipManager Create(FakeAccountAccess accounts, FakeCandidateAccess candidates) =>
-        new(accounts, new FakeMembershipAccess(WorkspaceId), candidates, TimeProvider.System);
+    [Fact]
+    public async Task Registration_sends_a_verification_email_to_the_new_address()
+    {
+        var email = new FakeEmailAccess();
+        var manager = Create(new FakeAccountAccess(), new FakeCandidateAccess(null), email);
+
+        await manager.RegisterAsync(
+            new RegisterRequest("esi@example.org", "Str0ng!Passw0rd", "Esi Owusu", "+233241234567"),
+            default);
+
+        var sent = Assert.Single(email.Sent);
+        Assert.Equal("esi@example.org", sent.To);
+        Assert.Contains("https://app.test/verify-email/confirm?userId=", sent.Content.Text);
+        Assert.Contains("token=a%2Bb%2Fc%3D", sent.Content.Text);
+    }
+
+    [Fact]
+    public async Task Registration_succeeds_when_the_email_provider_fails()
+    {
+        var accounts = new FakeAccountAccess();
+        var manager = Create(accounts, new FakeCandidateAccess(null), new FakeEmailAccess(succeeds: false));
+
+        var creation = await manager.RegisterAsync(
+            new RegisterRequest("esi@example.org", "Str0ng!Passw0rd", "Esi Owusu", "+233241234567"),
+            default);
+
+        Assert.NotNull(creation.Session);
+        Assert.Equal(creation.Session.UserId, accounts.SignedInUserId);
+    }
+
+    [Fact]
+    public async Task Resend_sends_to_the_current_unverified_address()
+    {
+        var email = new FakeEmailAccess();
+        var accounts = new FakeAccountAccess { Email = new("esi@example.org", "Esi", false) };
+
+        var outcome = await Create(accounts, new FakeCandidateAccess(null), email)
+            .ResendVerificationEmailAsync(UserId, default);
+
+        Assert.Equal(VerificationEmailOutcome.Sent, outcome);
+        Assert.Equal("esi@example.org", Assert.Single(email.Sent).To);
+    }
+
+    [Fact]
+    public async Task Resend_sends_nothing_once_verified()
+    {
+        var email = new FakeEmailAccess();
+        var accounts = new FakeAccountAccess { Email = new("esi@example.org", "Esi", true) };
+
+        var outcome = await Create(accounts, new FakeCandidateAccess(null), email)
+            .ResendVerificationEmailAsync(UserId, default);
+
+        Assert.Equal(VerificationEmailOutcome.AlreadyVerified, outcome);
+        Assert.Empty(email.Sent);
+    }
+
+    [Fact]
+    public async Task Resend_reports_a_provider_failure()
+    {
+        var accounts = new FakeAccountAccess { Email = new("esi@example.org", "Esi", false) };
+
+        var outcome = await Create(accounts, new FakeCandidateAccess(null), new FakeEmailAccess(succeeds: false))
+            .ResendVerificationEmailAsync(UserId, default);
+
+        Assert.Equal(VerificationEmailOutcome.NotSent, outcome);
+    }
+
+    [Fact]
+    public async Task Correcting_the_address_sends_to_the_new_address()
+    {
+        var email = new FakeEmailAccess();
+        var accounts = new FakeAccountAccess { Email = new("esi@exmaple.org", "Esi", false) };
+
+        var result = await Create(accounts, new FakeCandidateAccess(null), email)
+            .ChangeEmailAsync(UserId, new ChangeEmailRequest(" esi@example.org "), default);
+
+        Assert.Equal(VerificationEmailOutcome.Sent, result.Outcome);
+        Assert.Equal("esi@example.org", accounts.ChangedTo);
+        Assert.Equal("esi@example.org", Assert.Single(email.Sent).To);
+    }
+
+    [Theory]
+    [InlineData(EmailChange.InUse)]
+    [InlineData(EmailChange.Invalid)]
+    public async Task Correcting_to_an_unusable_address_returns_an_email_error(EmailChange change)
+    {
+        var email = new FakeEmailAccess();
+        var accounts = new FakeAccountAccess { Email = new("esi@exmaple.org", "Esi", false), ChangeResult = change };
+
+        var result = await Create(accounts, new FakeCandidateAccess(null), email)
+            .ChangeEmailAsync(UserId, new ChangeEmailRequest("taken@example.org"), default);
+
+        Assert.Equal(VerificationEmailOutcome.Rejected, result.Outcome);
+        Assert.Contains("email", result.Errors.Keys);
+        Assert.Empty(email.Sent);
+    }
+
+    [Fact]
+    public async Task A_verified_address_cannot_be_corrected()
+    {
+        var email = new FakeEmailAccess();
+        var accounts = new FakeAccountAccess
+        {
+            Email = new("esi@example.org", "Esi", true),
+            ChangeResult = EmailChange.AlreadyVerified
+        };
+
+        var result = await Create(accounts, new FakeCandidateAccess(null), email)
+            .ChangeEmailAsync(UserId, new ChangeEmailRequest("other@example.org"), default);
+
+        Assert.Equal(VerificationEmailOutcome.AlreadyVerified, result.Outcome);
+        Assert.Empty(email.Sent);
+    }
+
+    [Theory]
+    [InlineData(FakeAccountAccess.ValidToken, true)]
+    [InlineData("altered-token", false)]
+    [InlineData("", false)]
+    public async Task Verification_succeeds_only_with_a_valid_token(string token, bool expected)
+    {
+        var accounts = new FakeAccountAccess();
+
+        var verified = await Create(accounts, new FakeCandidateAccess(null))
+            .VerifyEmailAsync(new VerifyEmailRequest(UserId, token), default);
+
+        Assert.Equal(expected, verified);
+        Assert.Equal(expected, accounts.Confirmed);
+    }
+
+    private static MembershipManager Create(
+        FakeAccountAccess accounts,
+        FakeCandidateAccess candidates,
+        FakeEmailAccess? email = null) =>
+        new(
+            accounts,
+            new FakeMembershipAccess(WorkspaceId),
+            candidates,
+            email ?? new FakeEmailAccess(),
+            new AppLinks("https://app.test/"),
+            TimeProvider.System);
 }

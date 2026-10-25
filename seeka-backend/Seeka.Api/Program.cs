@@ -2,6 +2,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Identity;
 using Seeka.Api.Http;
 using Seeka.Managers;
+using Seeka.Managers.Membership;
 using Seeka.ResourceAccess;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +46,7 @@ builder.Services.AddRateLimiter(options =>
     options.AddPolicy(ApiRateLimits.Auth, ApiRateLimits.AuthPartition);
 });
 builder.Services.AddSingleton(TimeProvider.System);
+builder.Services.AddSingleton(new AppLinks(builder.Configuration["App:PublicUrl"] ?? "http://localhost:5173"));
 builder.Services.AddSeekaResourceAccess(builder.Configuration, builder.Environment);
 builder.Services.AddSeekaManagers();
 

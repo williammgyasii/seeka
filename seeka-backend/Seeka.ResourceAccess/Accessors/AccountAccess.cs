@@ -52,7 +52,7 @@ internal sealed class AccountAccess(
         await db.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
         return AccountCreation.Created(
-            new SessionResponse(user.Id, user.Email, user.DisplayName, workspace.Id, false));
+            new SessionResponse(user.Id, user.Email, user.DisplayName, workspace.Id, false, false));
     }
 
     public async Task SignInAsync(Guid userId, CancellationToken cancellationToken)
@@ -98,6 +98,52 @@ internal sealed class AccountAccess(
             user.Email!,
             user.DisplayName,
             workspaceId.Value,
-            onboardingComplete);
+            onboardingComplete,
+            user.EmailConfirmed);
+    }
+
+    public async Task<AccountEmail?> FindEmailAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        return user is null ? null : new AccountEmail(user.Email!, user.DisplayName, user.EmailConfirmed);
+    }
+
+    public async Task<string> CreateEmailConfirmationTokenAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString())
+            ?? throw new InvalidOperationException("The account could not be found.");
+        return await userManager.GenerateEmailConfirmationTokenAsync(user);
+    }
+
+    public async Task<bool> ConfirmEmailAsync(Guid userId, string token, CancellationToken cancellationToken)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        if (user is null) return false;
+        return (await userManager.ConfirmEmailAsync(user, token)).Succeeded;
+    }
+
+    public async Task<EmailChange> ChangeUnverifiedEmailAsync(
+        Guid userId,
+        string email,
+        CancellationToken cancellationToken)
+    {
+        var user = await userManager.FindByIdAsync(userId.ToString());
+        if (user is null) return EmailChange.NotFound;
+        if (user.EmailConfirmed) return EmailChange.AlreadyVerified;
+
+        user.Email = email;
+        user.UserName = email;
+        var update = await userManager.UpdateAsync(user);
+        if (!update.Succeeded)
+        {
+            await db.Entry(user).ReloadAsync(cancellationToken);
+            return update.Errors.Any(error => error.Code is "DuplicateEmail" or "DuplicateUserName")
+                ? EmailChange.InUse
+                : EmailChange.Invalid;
+        }
+
+        await userManager.UpdateSecurityStampAsync(user);
+        await signInManager.RefreshSignInAsync(user);
+        return EmailChange.Changed;
     }
 }
