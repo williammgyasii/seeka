@@ -1,0 +1,86 @@
+---
+description: Seeka frontend feature folders, RTK Query data layer, and import boundaries
+globs: seeka-frontend/**
+alwaysApply: false
+---
+
+# Frontend architecture
+
+```
+seeka-frontend/src/
+  app/                  App (routes), AppLayout, store.ts (setupStore),
+                        RequireSession + RedirectIfSignedIn (route guards)
+  features/
+    auth/               AuthPage.tsx, authApi.ts, PhoneNumberField.tsx, phoneCountries.ts
+    dashboard/
+    onboarding/         OnboardingPage.tsx, onboardingApi.ts
+    jobs/               import, pipeline, job detail, jobsApi.ts
+    outreach/           OutreachPanel, DraftEditor, outreachApi.ts
+    settings/
+  shared/
+    api/                baseApi, sessionApi, pipelineApi, errorMessage, shared types
+    ui/                 design system: index.ts (the only entry point)
+      primitives/       shadcn-generated components (Button, Card, Select...)
+      patterns/         Seeka compositions (PageHeader, SectionCard, StatusBadge...)
+    lib/                small pure helpers (cn re-export, formatters, countries)
+  test/                 setup.ts, server.ts (MSW server and respond helper)
+  main.tsx
+```
+
+## Data layer (RTK Query)
+
+- There is one `createApi`: `shared/api/baseApi.ts`. It has no endpoints. Never call `createApi` again, because a second API has its own cache and its tags can't reach the first.
+- Each feature adds its endpoints with `baseApi.injectEndpoints` in `<feature>Api.ts` and exports the generated hooks. Components use only those hooks, never `fetch`.
+- Endpoints are the repositories. Don't wrap them in a repository interface or service class.
+- Refresh with tags, not by hand. Queries `providesTags`, mutations `invalidatesTags`. The tag types are declared once in `baseApi` (`Session`, `Pipeline`, `Job`). Add a tag type there when a new resource is cached.
+- A mutation that changes one job takes `savedJobId` in its argument and invalidates `{ type: 'Job', id: savedJobId }`.
+- No Redux slices until there is real client state shared across pages. Server data belongs in RTK Query, not copied into a slice.
+- In components, `await` the trigger and check `!result.error` before navigating or resetting a form. Show failures with `<ErrorMessage error={state.error} />`.
+
+## Routing and the session
+
+- Routing follows the cached session. `RequireSession` wraps protected routes: 401 goes to `/login` with `state.from`, and `onboardingComplete: false` goes to `/onboarding`. `RedirectIfSignedIn` wraps `/login`.
+- Auth forms don't call `navigate()`. Sign-in and sign-up write the session into the cache, and the guards redirect. A form-level `navigate()` races the guard.
+- The guards are user experience. The API's `[Authorize]` is the lock.
+- A mutation that changes what the session reports patches the cached session when it succeeds (so the guard never acts on a stale value) and also invalidates `Session`.
+
+## Boundaries
+
+- `features/*` may import from `shared/*`. A feature never imports from another feature, not even in tests. Features share tag names, not modules. If two features need the same endpoint, move it to `shared/api` (like `pipelineApi`).
+- `shared/*` never imports from `features/*` or `app/`.
+- Only `app/` knows the routes as a whole and creates the store.
+- Keep files focused. A file growing past about 250 lines is a signal to split it.
+
+## Design system (shadcn)
+
+Three layers, each changing for its own reason:
+
+| Layer | Where | Changes when |
+|---|---|---|
+| Tokens | `src/index.css` (`:root`, `.dark`, `@theme inline`) | The brand or theme changes |
+| Primitives | `shared/ui/primitives/` | shadcn ships a fix, or we add a component |
+| Patterns | `shared/ui/patterns/` | Seeka's page conventions change |
+
+- Color comes only from tokens: `bg-primary`, `text-muted-foreground`, `border-border`, `bg-success/10 text-success`. Palette classes (`bg-slate-900`, `text-white`) and arbitrary colors (`bg-[#fff]`) fail lint everywhere in `src/`.
+- The palette is "ink & citrus": `primary` is indigo ink; `highlight` is citrus lime for brand moments only (logo mark, login glow, a headline accent on `bg-primary`). Never use `highlight` as text on a light surface, and never for status. `accent` keeps shadcn's meaning (hover and selected rows).
+- Motion is CSS only (`tw-animate-css`, `animate-glow-drift`) and every animation carries `motion-reduce:animate-none`.
+- Status color goes through `StatusBadge` with a tone: `success`, `warning`, `danger`, `info`, `neutral`. Domain badges map to a tone (`EligibilityBadge`); they don't pick colors.
+- Buttons use shadcn variants: `default` for the main action, `outline` for secondary, `ghost` for icon or quiet actions, `link` for inline text, `destructive` for deletes.
+- Features and `app/` import UI only from `@/shared/ui`. Deep imports (`@/shared/ui/primitives/button`) and direct `radix-ui` / `@radix-ui/*` imports fail lint.
+- Add a primitive with `npx shadcn@latest add <name>` from `seeka-frontend/`, then export it from `shared/ui/index.ts`. Never pass `--overwrite`, because it replaces our edits. Generated files import `cn` from the `cn` package (shadcn's clsx + tailwind-merge); keep that.
+- A new token needs three edits in `index.css`: `:root`, `.dark`, and the `@theme inline` mapping.
+
+## Tests
+
+- Design rules: `shared/ui/designRules.test.ts` lints sample code with the real ESLint config. Change the rule and the test together.
+- Cache behavior: a real store (`setupStore()`) plus MSW handlers from `respond()`. Assert which requests happen, not RTK internals.
+- Components that use hooks render inside `<Provider store={setupStore()}>`. Any request without a handler fails the test.
+
+```tsx
+// ❌ Manual refresh and a cross-feature import
+onSuccess: () => queryClient.invalidateQueries({ queryKey: ['job', id] })
+import { jobsApi } from '@/features/jobs/jobsApi'
+
+// ✅ The mutation declares what it makes stale
+invalidatesTags: (_result, _error, { savedJobId }) => [{ type: 'Job', id: savedJobId }]
+```
