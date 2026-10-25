@@ -24,6 +24,7 @@
 - [x] 4.2 Add `RequireSession` around the `AppLayout` route and the `from` redirect in `AuthPage`; verify the tests pass
 - [x] 4.3 Write failing tests: a session with `onboardingComplete: false` on `/dashboard` shows onboarding; saving the profile refetches the session; verify they fail, then add the gate and the `Session` invalidation and verify they pass
 - [x] 4.4 Narrow the login brand panel (column ratio and headline size); check desktop and phone widths
+- [x] 4.5 Write failing tests: onboarding shows no app navigation but offers sign-out; a finished user on `/onboarding` goes to the dashboard. Move onboarding into `OnboardingLayout`, share `SignOutButton`, add the reverse redirect; verify in the running app
 
 ## 5. Delivery
 
