@@ -9,11 +9,12 @@ alwaysApply: false
 ```
 seeka-frontend/src/
   app/                  App (routes), store.ts (setupStore),
-                        AppLayout (signed-in app) + OnboardingLayout (setup, no nav),
+                        AppLayout (signed-in app) + SetupLayout (verify email, onboarding; no nav),
                         RequireSession + RedirectIfSignedIn (route guards), SignOutButton
   features/
     auth/               AuthPage.tsx, authApi.ts, PhoneNumberField.tsx, phoneCountries.ts
     dashboard/
+    verification/       VerifyEmailPage (check your inbox), ConfirmEmailPage (public link page), verificationApi.ts
     onboarding/         OnboardingPage.tsx, onboardingApi.ts
     jobs/               import, pipeline, job detail, jobsApi.ts
     outreach/           OutreachPanel, DraftEditor, outreachApi.ts
@@ -40,7 +41,7 @@ seeka-frontend/src/
 
 ## Routing and the session
 
-- Routing follows the cached session. `RequireSession` wraps protected routes: 401 goes to `/login` with `state.from`, and `onboardingComplete: false` goes to `/onboarding`, and `true` on `/onboarding` goes to `/dashboard`. Onboarding renders in `OnboardingLayout`, outside `AppLayout`. `RedirectIfSignedIn` wraps `/login`.
+- Routing follows the cached session. `RequireSession` wraps protected routes, in this order: 401 goes to `/login` with `state.from`; `emailVerified: false` goes to `/verify-email`; `onboardingComplete: false` goes to `/onboarding`; a user who is past a step and still on its page moves on. Both setup pages render in `SetupLayout`, outside `AppLayout`. `RedirectIfSignedIn` wraps `/login`. `/verify-email/confirm` sits outside every guard, because the link may be opened signed out on another device.
 - Auth forms don't call `navigate()`. Sign-in and sign-up write the session into the cache, and the guards redirect. A form-level `navigate()` races the guard.
 - The guards are user experience. The API's `[Authorize]` is the lock.
 - A mutation that changes what the session reports patches the cached session when it succeeds (so the guard never acts on a stale value) and also invalidates `Session`.

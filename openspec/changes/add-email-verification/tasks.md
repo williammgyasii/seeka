@@ -23,7 +23,7 @@
 
 ## 5. Delivery
 
-- [ ] 5.1 Run backend and frontend tests, lint, and build
-- [ ] 5.2 In the running app with the logging email access: register, see the gate, confirm the API returns 403 for the pipeline, open the logged link in another browser while signed out, then continue to onboarding in the first browser
+- [x] 5.1 Run backend and frontend tests, lint, and build
+- [x] 5.2 In the running app with the logging email access: register, see the gate, confirm the API returns 403 for the pipeline, open the logged link in another browser while signed out, then continue to onboarding in the first browser
 - [ ] 5.3 With a real token in user-secrets: send one verification email to an address William controls and confirm it arrives and is not marked as spam
-- [ ] 5.4 Wire `EMAIL_API_TOKEN` through `backend-deploy.yml` and `containerEnvironment()` with a test in `worker-routing.test.ts`; update the README and both architecture rules; `openspec validate add-email-verification --strict`
+- [x] 5.4 Wire `EMAIL_API_TOKEN` through `backend-deploy.yml` and `containerEnvironment()` with a test in `worker-routing.test.ts`; update the README and both architecture rules; `openspec validate add-email-verification --strict`
