@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Seeka.Api.Http;
+using Seeka.ResourceAccess.Accessors;
 using Seeka.ResourceAccess.BackgroundJobs;
 using Seeka.ResourceAccess.Persistence;
 
@@ -33,6 +34,20 @@ public sealed class CloudflareRuntimeTests
         Assert.False(BackgroundJobPolicy.ShouldRunHangfireServer(
             "Development",
             configuration));
+    }
+
+    [Theory]
+    [InlineData("Cloudflare", "token", EmailDelivery.Cloudflare)]
+    [InlineData("Development", "token", EmailDelivery.Cloudflare)]
+    [InlineData("Development", "", EmailDelivery.Log)]
+    [InlineData("Cloudflare", "", EmailDelivery.Unconfigured)]
+    [InlineData("Production", null, EmailDelivery.Unconfigured)]
+    public void Verification_links_are_only_logged_in_development(
+        string environmentName,
+        string? token,
+        EmailDelivery expected)
+    {
+        Assert.Equal(expected, EmailDeliveryPolicy.Choose(environmentName, token));
     }
 
     [Fact]

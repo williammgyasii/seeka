@@ -22,6 +22,9 @@ describe('API container routing', () => {
   it('passes only the backend runtime values into the container', () => {
     const environment = containerEnvironment({
       DATABASE_CONNECTION_STRING: 'postgres-secret',
+      EMAIL_API_TOKEN: 'email-secret',
+      EMAIL_ACCOUNT_ID: 'account-id',
+      APP_PUBLIC_URL: 'https://seeka.example',
       INTERNAL_DEPLOY_TOKEN: 'must-not-enter-container',
     })
 
@@ -30,6 +33,9 @@ describe('API container routing', () => {
       ASPNETCORE_URLS: 'http://+:8080',
       ConnectionStrings__Seeka: 'postgres-secret',
       Hangfire__RunServer: 'false',
+      App__PublicUrl: 'https://seeka.example',
+      Email__CloudflareAccountId: 'account-id',
+      Email__CloudflareApiToken: 'email-secret',
     })
   })
 
