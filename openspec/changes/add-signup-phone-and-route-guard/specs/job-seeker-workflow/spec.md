@@ -43,6 +43,14 @@ sign-in and registration.
 - **WHEN** a user who has registered but not saved a candidate profile signs in or opens any protected page other than onboarding
 - **THEN** the web app goes to onboarding, and after the profile is saved it allows the rest of the app
 
+#### Scenario: Onboarding is its own page
+- **WHEN** a user with unfinished onboarding views onboarding
+- **THEN** the page shows no app navigation, and offers sign-out
+
+#### Scenario: Finished onboarding is not shown again
+- **WHEN** a user who has saved a candidate profile opens onboarding
+- **THEN** the web app goes to the dashboard
+
 #### Scenario: Auth endpoints are rate-limited per IP
 - **WHEN** one IP address sends more than 10 sign-in or registration requests within a minute
 - **THEN** further requests in that minute return 429 Too Many Requests

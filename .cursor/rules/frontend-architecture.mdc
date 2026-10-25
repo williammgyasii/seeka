@@ -8,8 +8,9 @@ alwaysApply: false
 
 ```
 seeka-frontend/src/
-  app/                  App (routes), AppLayout, store.ts (setupStore),
-                        RequireSession + RedirectIfSignedIn (route guards)
+  app/                  App (routes), store.ts (setupStore),
+                        AppLayout (signed-in app) + OnboardingLayout (setup, no nav),
+                        RequireSession + RedirectIfSignedIn (route guards), SignOutButton
   features/
     auth/               AuthPage.tsx, authApi.ts, PhoneNumberField.tsx, phoneCountries.ts
     dashboard/
@@ -39,7 +40,7 @@ seeka-frontend/src/
 
 ## Routing and the session
 
-- Routing follows the cached session. `RequireSession` wraps protected routes: 401 goes to `/login` with `state.from`, and `onboardingComplete: false` goes to `/onboarding`. `RedirectIfSignedIn` wraps `/login`.
+- Routing follows the cached session. `RequireSession` wraps protected routes: 401 goes to `/login` with `state.from`, and `onboardingComplete: false` goes to `/onboarding`, and `true` on `/onboarding` goes to `/dashboard`. Onboarding renders in `OnboardingLayout`, outside `AppLayout`. `RedirectIfSignedIn` wraps `/login`.
 - Auth forms don't call `navigate()`. Sign-in and sign-up write the session into the cache, and the guards redirect. A form-level `navigate()` races the guard.
 - The guards are user experience. The API's `[Authorize]` is the lock.
 - A mutation that changes what the session reports patches the cached session when it succeeds (so the guard never acts on a stale value) and also invalidates `Session`.
