@@ -7,7 +7,7 @@
 
 ## 2. Release 2: canonical host
 
-- [ ] 2.1 Write failing tests for the redirect: the production pages.dev host gets a 301 to the same path and query on the branded host; the branded host, preview hosts, and localhost pass through
-- [ ] 2.2 Add the root Pages middleware; verify the edge tests and typecheck pass, and that the frontend deploy workflow runs the new test
+- [x] 2.1 Write failing tests for the redirect: the production pages.dev host gets a 301 to the same path and query on the branded host; the branded host, preview hosts, and localhost pass through
+- [x] 2.2 Add the root Pages middleware; verify the edge tests and typecheck pass, and that the frontend deploy workflow runs the new test
 - [ ] 2.3 Set `CLOUDFLARE_PAGES_URL=https://app.seekajobs.tech` in the `production` environment, release, and confirm the redirect and a verification link that starts with the branded host
 - [ ] 2.4 `openspec validate add-app-custom-domain --strict`
