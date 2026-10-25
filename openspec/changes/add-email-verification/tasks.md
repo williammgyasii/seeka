@@ -17,9 +17,9 @@
 
 ## 4. Frontend
 
-- [ ] 4.1 Write failing tests: an unverified session on `/dashboard` shows the check-your-inbox page with the address; resend calls the API; correcting the address shows the new address; a verified user on `/verify-email` moves on; verify they fail
-- [ ] 4.2 Add `emailVerified` to `Session`, the verification gate in `RequireSession`, rename `OnboardingLayout` to `SetupLayout`, build the `/verify-email` page; verify the tests pass
-- [ ] 4.3 Write failing tests for `/verify-email/confirm`: success while signed in continues to onboarding, success while signed out offers sign-in, failure explains and offers a new link; implement; verify they pass
+- [x] 4.1 Write failing tests: an unverified session on `/dashboard` shows the check-your-inbox page with the address; resend calls the API; correcting the address shows the new address; a verified user on `/verify-email` moves on; verify they fail
+- [x] 4.2 Add `emailVerified` to `Session`, the verification gate in `RequireSession`, rename `OnboardingLayout` to `SetupLayout`, build the `/verify-email` page; verify the tests pass
+- [x] 4.3 Write failing tests for `/verify-email/confirm`: success while signed in continues to onboarding, success while signed out offers sign-in, failure explains and offers a new link; implement; verify they pass
 
 ## 5. Delivery
 

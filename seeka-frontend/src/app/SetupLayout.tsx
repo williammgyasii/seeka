@@ -3,8 +3,8 @@ import { useGetSessionQuery } from '@/shared/api'
 import { Brand } from '@/shared/ui'
 import { SignOutButton } from './SignOutButton'
 
-/** Full-page shell for setup: no app navigation until onboarding is done. */
-export function OnboardingLayout() {
+/** Full-page shell for setup: no app navigation until verification and onboarding are done. */
+export function SetupLayout() {
   const session = useGetSessionQuery()
   return (
     <div className="min-h-screen bg-muted/40">

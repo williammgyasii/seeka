@@ -13,6 +13,7 @@ const session = {
   displayName: 'Ama Mensah',
   workspaceId: 'w1',
   onboardingComplete: true,
+  emailVerified: true,
 }
 
 function renderAt(path: string) {
@@ -82,6 +83,29 @@ describe('Protected pages', () => {
     expect(screen.queryByRole('link', { name: /pipeline/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /dashboard/i })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument()
+  })
+
+  it('send an unverified user to check their inbox before anything else', async () => {
+    respond('get', '/api/auth/session', {
+      ...session,
+      emailVerified: false,
+      onboardingComplete: false,
+    })
+    renderAt('/dashboard')
+
+    expect(await screen.findByRole('heading', { name: /check your inbox/i })).toBeInTheDocument()
+    expect(screen.getByText('ama@example.com', { selector: 'strong' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /pipeline/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument()
+  })
+
+  it('send a verified user on the inbox page onward to onboarding', async () => {
+    respond('get', '/api/auth/session', { ...session, onboardingComplete: false })
+    renderAt('/verify-email')
+
+    expect(
+      await screen.findByRole('heading', { name: /give assessments reliable facts/i }),
+    ).toBeInTheDocument()
   })
 
   it('send a user who finished onboarding from onboarding to the dashboard', async () => {

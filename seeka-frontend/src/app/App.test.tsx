@@ -33,6 +33,7 @@ describe('Seeka workflow', () => {
       displayName: 'Ama',
       workspaceId: 'w1',
       onboardingComplete: true,
+      emailVerified: true,
     })
     renderApp('/jobs/import')
 
