@@ -8,6 +8,7 @@ import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { OutreachPanel } from '@/features/outreach/OutreachPanel'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { AppLayout } from './AppLayout'
+import { OnboardingLayout } from './OnboardingLayout'
 import { RedirectIfSignedIn } from './RedirectIfSignedIn'
 import { RequireSession } from './RequireSession'
 
@@ -18,10 +19,12 @@ function App() {
         <Route path="/login" element={<AuthPage />} />
       </Route>
       <Route element={<RequireSession />}>
+        <Route element={<OnboardingLayout />}>
+          <Route path="/onboarding" element={<OnboardingPage />} />
+        </Route>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="onboarding" element={<OnboardingPage />} />
           <Route path="jobs/import" element={<ImportJobPage />} />
           <Route
             path="jobs/:id"

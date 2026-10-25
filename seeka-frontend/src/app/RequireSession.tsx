@@ -26,8 +26,10 @@ export function RequireSession() {
     return (
       <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
     )
-  if (!session.data.onboardingComplete && location.pathname !== '/onboarding')
+  const onOnboarding = location.pathname === '/onboarding'
+  if (!session.data.onboardingComplete && !onOnboarding)
     return <Navigate to="/onboarding" replace />
+  if (session.data.onboardingComplete && onOnboarding) return <Navigate to="/dashboard" replace />
   return <Outlet />
 }
 
