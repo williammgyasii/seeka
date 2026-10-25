@@ -26,6 +26,11 @@ export function RequireSession() {
     return (
       <Navigate to="/login" replace state={{ from: location.pathname + location.search }} />
     )
+  const onVerifyEmail = location.pathname === '/verify-email'
+  if (!session.data.emailVerified)
+    return onVerifyEmail ? <Outlet /> : <Navigate to="/verify-email" replace />
+  if (onVerifyEmail)
+    return <Navigate to={session.data.onboardingComplete ? '/dashboard' : '/onboarding'} replace />
   const onOnboarding = location.pathname === '/onboarding'
   if (!session.data.onboardingComplete && !onOnboarding)
     return <Navigate to="/onboarding" replace />

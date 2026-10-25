@@ -5,6 +5,8 @@ export type Session = {
   workspaceId: string
   /** True once the workspace has a saved candidate profile. */
   onboardingComplete: boolean
+  /** The API refuses every workspace endpoint until this is true. */
+  emailVerified: boolean
 }
 
 export type PipelineItem = {

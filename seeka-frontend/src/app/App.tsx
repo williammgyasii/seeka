@@ -7,10 +7,12 @@ import { PipelinePage } from '@/features/jobs/PipelinePage'
 import { OnboardingPage } from '@/features/onboarding/OnboardingPage'
 import { OutreachPanel } from '@/features/outreach/OutreachPanel'
 import { SettingsPage } from '@/features/settings/SettingsPage'
+import { ConfirmEmailPage } from '@/features/verification/ConfirmEmailPage'
+import { VerifyEmailPage } from '@/features/verification/VerifyEmailPage'
 import { AppLayout } from './AppLayout'
-import { OnboardingLayout } from './OnboardingLayout'
 import { RedirectIfSignedIn } from './RedirectIfSignedIn'
 import { RequireSession } from './RequireSession'
+import { SetupLayout } from './SetupLayout'
 
 function App() {
   return (
@@ -18,8 +20,10 @@ function App() {
       <Route element={<RedirectIfSignedIn />}>
         <Route path="/login" element={<AuthPage />} />
       </Route>
+      <Route path="/verify-email/confirm" element={<ConfirmEmailPage />} />
       <Route element={<RequireSession />}>
-        <Route element={<OnboardingLayout />}>
+        <Route element={<SetupLayout />}>
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
         </Route>
         <Route path="/" element={<AppLayout />}>

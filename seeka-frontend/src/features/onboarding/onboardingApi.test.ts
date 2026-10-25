@@ -10,6 +10,7 @@ const incomplete = {
   displayName: 'Ama',
   workspaceId: 'w1',
   onboardingComplete: false,
+  emailVerified: true,
 }
 
 describe('onboardingApi', () => {

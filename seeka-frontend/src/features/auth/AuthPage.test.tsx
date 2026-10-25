@@ -13,6 +13,7 @@ const session = {
   displayName: 'Ama Mensah',
   workspaceId: 'w1',
   onboardingComplete: false,
+  emailVerified: false,
 }
 
 async function openSignUp(timeZone = 'Africa/Accra') {
