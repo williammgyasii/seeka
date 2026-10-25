@@ -7,8 +7,12 @@ and truthful outreach drafting.
 
 ## Implemented
 
-- ASP.NET Core Identity registration, cookie sign-in, lockout, and personal
-  workspace creation
+- ASP.NET Core Identity registration (full name and a required phone number,
+  validated with libphonenumber and stored as unverified E.164), cookie
+  sign-in, lockout, and personal workspace creation
+- Frontend route guards: signed-out visitors go to sign-in and return to the
+  page they asked for; accounts without a candidate profile go to onboarding.
+  The API's `[Authorize]` remains the actual lock.
 - Workspace-scoped candidate profiles and job preferences
 - Manual job import with source provenance and URL-scheme validation
 - Rules-based geographic eligibility with evidence and conflict detection
@@ -18,9 +22,12 @@ and truthful outreach drafting.
 - Grounded email, LinkedIn, and follow-up drafts for user review
 - Append-only pipeline activity
 - PostgreSQL/EF Core migration, OpenAPI, Hangfire PostgreSQL storage, rate
-  limiting, problem responses, and JSON structured logs
-- Responsive React workflow with Router, TanStack Query, React Hook Form, Zod,
-  Tailwind CSS, and shadcn-compatible UI primitives
+  limiting (120 requests a minute per signed-in user or per IP on every
+  endpoint, 10 a minute per IP on sign-in and sign-up; in memory per
+  instance), problem responses, and JSON structured logs
+- Responsive React workflow with Router, Redux Toolkit Query, React Hook Form, Zod,
+  Tailwind CSS v4, and a shadcn/ui design system (Radix, Seeka "ink & citrus"
+  tokens with dark-mode values)
 
 ## Honest development states
 
@@ -73,9 +80,9 @@ migrations and run the API:
 dotnet user-secrets set \
   "ConnectionStrings:Seeka" \
   "Host=your-neon-host;Port=5432;Database=seeka;Username=seeka_owner;Password=...;SSL Mode=Require" \
-  --project seeka-backend
-dotnet run --project seeka-backend -- --migrate
-dotnet run --project seeka-backend
+  --project seeka-backend/Seeka.Api
+dotnet run --project seeka-backend/Seeka.Api -- --migrate
+dotnet run --project seeka-backend/Seeka.Api
 ```
 
 Run the frontend in another terminal:
@@ -95,7 +102,7 @@ exposed; then update both stores before restarting the API.
 
 ```bash
 dotnet test Seeka.slnx
-dotnet list seeka-backend/seeka-backend.csproj package --vulnerable --include-transitive
+dotnet list Seeka.slnx package --vulnerable --include-transitive
 
 cd seeka-frontend
 npm test
@@ -112,13 +119,35 @@ transparent match components, workspace isolation, and grounded outreach.
 
 ## Architecture
 
-- `Program.cs`: HTTP translation, authentication, and endpoint mapping
-- `Application/`: one-use-case sequencing and workspace resolution
-- `Domain/`: deterministic eligibility, match, and outreach policy with no web
-  or database dependency
-- `Infrastructure/`: EF Core entities, constraints, migrations, and atomic
-  PostgreSQL access
-- `seeka-frontend/src/`: routed workflow, API client, forms, and reusable UI
+The backend follows Juval Löwy's volatility layers. Each layer is its own
+project under `seeka-backend/`, and the compiler enforces the direction:
+
+```
+Seeka.Api (Client)  -->  Seeka.Managers  -->  Seeka.Engines
+Seeka.ResourceAccess  -->  Seeka.Managers, Seeka.Engines
+```
+
+- `Seeka.Api` (Client): MVC controllers that call one manager per request
+- `Seeka.Managers`: `MembershipManager`, `JobSearchManager`, and
+  `OutreachManager` sequence each use case. Also holds the request and view
+  contracts and the accessor interfaces.
+- `Seeka.Engines`: deterministic eligibility, matching, outreach, and intake
+  policy with no I/O
+- `Seeka.ResourceAccess`: accessors (the repositories), EF Core entities,
+  migrations, Identity, and Hangfire
+- `seeka-frontend/src/`: `app/` (router, layout, Redux store),
+  `features/<area>/` (pages, `<area>Api.ts` endpoints injected into the shared
+  `baseApi`, tests), and `shared/` (UI, `baseApi`, helpers). Mutations refresh
+  cached data through RTK Query tags. UI comes only from `@/shared/ui`:
+  shadcn primitives, Seeka patterns on top, and color tokens in
+  `src/index.css`. Lint rejects raw palette classes and deep UI imports.
+
+`.cursor/rules/backend-architecture.mdc` and
+`.cursor/rules/frontend-architecture.mdc` describe where new code goes.
+`ArchitectureTests` fails if a layer gains an outer reference, a controller
+injects anything but a manager, a manager calls a manager, an accessor calls an
+accessor, a minimal-API endpoint is mapped, or a file declares more than one
+type.
 
 Every resource query derives its workspace from the authenticated Identity user
 and membership. A client-supplied workspace ID never grants access.
