@@ -42,6 +42,7 @@ describe('Verification link page', () => {
   it('continues to onboarding when signed in', async () => {
     respond('get', '/api/auth/session', { ...session, emailVerified: true })
     respond('post', '/api/auth/verify-email')
+    respond('get', '/api/candidate/resume', undefined, 404)
     const user = userEvent.setup()
     openLink()
 

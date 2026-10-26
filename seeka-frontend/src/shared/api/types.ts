@@ -20,6 +20,23 @@ export type PipelineItem = {
   updatedAt: string
 }
 
+/** Facts read from a résumé; anything it does not state is null or empty. */
+export type ResumeDraft = {
+  fullName: string | null
+  seniority: string | null
+  yearsOfExperience: number | null
+  experienceSummary: string | null
+  skills: string[]
+  targetJobTitles: string[]
+}
+
+export type Resume = {
+  fileName: string
+  uploadedAt: string
+  status: 'Extracted' | 'Unreadable' | 'ExtractionFailed'
+  draft: ResumeDraft | null
+}
+
 export type CandidateSetup = {
   profile: {
     fullName: string

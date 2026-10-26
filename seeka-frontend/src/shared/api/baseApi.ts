@@ -6,7 +6,7 @@ export const baseApi = createApi({
     baseUrl: new URL('/api', window.location.origin).href,
     credentials: 'include',
   }),
-  tagTypes: ['Session', 'Pipeline', 'Job'],
+  tagTypes: ['Session', 'Pipeline', 'Job', 'Resume'],
   refetchOnMountOrArgChange: 30,
   endpoints: () => ({}),
 })
