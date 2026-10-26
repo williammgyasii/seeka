@@ -5,4 +5,4 @@
 ## 2. Marketing
 
 - [x] 2.1 Add the card and the FAQ entry to `seeka-marketing/src/pages/index.astro`
-- [ ] 2.2 Ship in a release and confirm the copy on `https://seekajobs.tech/`
+- [x] 2.2 Ship in a release and confirm the copy on `https://seekajobs.tech/`
