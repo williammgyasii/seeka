@@ -1,9 +1,14 @@
 # Seeka
 
-Seeka is a production-minded modular monolith for Africa-based professionals
-seeking remote jobs. The working slice separates geographic eligibility from
-professional fit, then carries a real vacancy through manual contact research
-and truthful outreach drafting.
+Seeka helps job seekers stop applying cold: it tells them which jobs fit, then
+gets their application to a real person inside the company. The app is a
+production-minded modular monolith. The working slice separates geographic
+eligibility from professional fit, then carries a real vacancy through manual
+contact research and truthful outreach drafting.
+
+The public marketing site (`seeka-marketing/`, Astro) is served at
+`https://seekajobs.tech`; the app is at `https://app.seekajobs.tech` and is kept
+out of search results with `noindex`.
 
 ## Implemented
 
@@ -208,7 +213,9 @@ triggers:
 
 - infrastructure reconciliation with Terraform;
 - database migration followed by Worker/container deployment;
-- frontend and Pages Function deployment.
+- frontend and Pages Function deployment;
+- marketing site deployment to the `seeka-marketing` Pages project, whose
+  middleware redirects `www` and the pages.dev host to the apex.
 
 Provision infrastructure before the first release. Later infrastructure
 changes must remain backward-compatible because release workflows are

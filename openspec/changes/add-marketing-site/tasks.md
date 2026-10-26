@@ -16,7 +16,7 @@
 
 ## 4. Delivery
 
-- [ ] 4.1 Failing Terraform tests for the `seeka-marketing` project, apex and `www` domains, and DNS; then the resources
-- [ ] 4.2 `marketing-ci.yml` (build, test, Lighthouse budgets) and `marketing-deploy.yml` (release, approval, deploy, smoke test)
+- [x] 4.1 Failing Terraform tests for the `seeka-marketing` project, apex and `www` domains, and DNS; then the resources
+- [x] 4.2 `marketing-ci.yml` (build, test, Lighthouse budgets) and `marketing-deploy.yml` (release, approval, deploy, smoke test)
 - [ ] 4.3 Release; confirm the apex serves the site, `www` redirects, and the app sends `noindex`
 - [ ] 4.4 `openspec validate add-marketing-site --strict`

@@ -83,3 +83,41 @@ resource "cloudflare_r2_bucket" "resumes" {
   account_id = var.cloudflare_account_id
   name       = "seeka-resumes"
 }
+
+resource "cloudflare_pages_project" "marketing" {
+  account_id        = var.cloudflare_account_id
+  name              = "seeka-marketing"
+  production_branch = var.production_branch
+}
+
+resource "cloudflare_pages_domain" "marketing_apex" {
+  account_id   = var.cloudflare_account_id
+  project_name = cloudflare_pages_project.marketing.name
+  name         = var.zone_name
+}
+
+resource "cloudflare_pages_domain" "marketing_www" {
+  account_id   = var.cloudflare_account_id
+  project_name = cloudflare_pages_project.marketing.name
+  name         = "www.${var.zone_name}"
+}
+
+resource "cloudflare_dns_record" "marketing_apex" {
+  zone_id = data.cloudflare_zone.seeka.id
+  name    = var.zone_name
+  type    = "CNAME"
+  content = cloudflare_pages_project.marketing.subdomain
+  proxied = true
+  ttl     = 1
+  comment = "Seeka marketing site on Cloudflare Pages; managed by Terraform."
+}
+
+resource "cloudflare_dns_record" "marketing_www" {
+  zone_id = data.cloudflare_zone.seeka.id
+  name    = "www.${var.zone_name}"
+  type    = "CNAME"
+  content = cloudflare_pages_project.marketing.subdomain
+  proxied = true
+  ttl     = 1
+  comment = "Redirected to the apex by the marketing site's middleware; managed by Terraform."
+}

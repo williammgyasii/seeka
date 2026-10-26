@@ -72,6 +72,50 @@ run "app_is_served_at_the_branded_domain" {
   }
 }
 
+run "marketing_site_is_served_at_the_apex" {
+  command = plan
+
+  override_data {
+    target = data.cloudflare_zone.seeka
+    values = {
+      id = "11111111111111111111111111111111"
+    }
+  }
+
+  assert {
+    condition     = cloudflare_pages_project.marketing.name == "seeka-marketing"
+    error_message = "The marketing site deploys to its own Pages project."
+  }
+
+  assert {
+    condition     = cloudflare_pages_project.marketing.production_branch == "main"
+    error_message = "Marketing production deployments must follow main."
+  }
+
+  assert {
+    condition = (
+      cloudflare_pages_domain.marketing_apex.name == "seekajobs.tech" &&
+      cloudflare_pages_domain.marketing_www.name == "www.seekajobs.tech" &&
+      cloudflare_pages_domain.marketing_apex.project_name == "seeka-marketing" &&
+      cloudflare_pages_domain.marketing_www.project_name == "seeka-marketing"
+    )
+    error_message = "Both the apex and www must be attached to the marketing project; the middleware redirects www."
+  }
+
+  assert {
+    condition = (
+      cloudflare_dns_record.marketing_apex.name == "seekajobs.tech" &&
+      cloudflare_dns_record.marketing_www.name == "www.seekajobs.tech" &&
+      cloudflare_dns_record.marketing_apex.type == "CNAME" &&
+      cloudflare_dns_record.marketing_www.type == "CNAME" &&
+      cloudflare_dns_record.marketing_apex.proxied &&
+      cloudflare_dns_record.marketing_www.proxied &&
+      cloudflare_dns_record.marketing_apex.zone_id == "11111111111111111111111111111111"
+    )
+    error_message = "The apex and www must be proxied CNAMEs in the seekajobs.tech zone."
+  }
+}
+
 run "resumes_have_a_private_bucket" {
   command = plan
 
