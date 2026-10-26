@@ -1,0 +1,24 @@
+{
+  "name": "seeka-marketing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "test": "vitest run",
+    "lighthouse": "lhci autorun"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/geist": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.4.2",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@lhci/cli": "^0.15.1",
+    "node-html-parser": "^9.0.5",
+    "vitest": "^5.0.5"
+  }
+}

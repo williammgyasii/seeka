@@ -1,0 +1,60 @@
+---
+import CallToAction from '../../components/CallToAction.astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { guides } from '../../lib/guides'
+import { ORIGIN, organization } from '../../lib/site'
+
+const structuredData = [
+  organization,
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: 'Job search guides',
+    url: `${ORIGIN}/guides/`,
+    hasPart: guides.map((guide) => ({
+      '@type': 'Article',
+      headline: guide.title,
+      url: `${ORIGIN}${guide.path}`,
+    })),
+  },
+]
+---
+
+<BaseLayout
+  title="Job search guides: referrals, hiring managers, and getting a reply"
+  description="Practical guides for the part of the job search after you find an opening: getting a referral, finding the hiring manager, messaging recruiters, and breaking the silence."
+  path="/guides/"
+  structuredData={structuredData}
+>
+  <section class="mx-auto max-w-4xl px-5 py-16 sm:py-20">
+    <p class="text-sm font-medium tracking-wide text-muted-foreground uppercase">Guides</p>
+    <h1 class="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
+      Get your application in front of a person
+    </h1>
+    <p class="mt-4 max-w-2xl text-lg text-muted-foreground">
+      Finding openings is the easy part. These guides cover what comes after: who to contact, how
+      to find them, and what to say.
+    </p>
+    <ul class="mt-12 grid gap-4">
+      {
+        guides.map((guide) => (
+          <li>
+            <a
+              href={guide.path}
+              class="block rounded-xl border border-border p-6 transition-colors hover:border-ink"
+            >
+              <h2 class="text-xl font-semibold">{guide.title}</h2>
+              <p class="mt-2 text-muted-foreground">{guide.summary}</p>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+    <div class="mt-16">
+      <CallToAction
+        title="Do this with Seeka"
+        body="Check which jobs fit, then draft honest outreach to the people who hire."
+      />
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,22 @@
+---
+import { REGISTER_URL, SIGN_IN_URL } from '../lib/site'
+import Brand from './Brand.astro'
+---
+
+<header class="border-b border-border bg-white/90 backdrop-blur">
+  <nav
+    class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4"
+    aria-label="Main"
+  >
+    <a href="/" aria-label="Seeka home"><Brand /></a>
+    <div class="flex items-center gap-1 text-sm font-medium sm:gap-3">
+      <a href="/guides/" class="hidden rounded-md px-3 py-2 hover:bg-muted sm:inline-block">Guides</a>
+      <a href={SIGN_IN_URL} class="rounded-md px-3 py-2 hover:bg-muted">Sign in</a>
+      <a
+        href={REGISTER_URL}
+        class="rounded-md bg-ink px-4 py-2 text-white transition-colors hover:bg-ink-deep"
+        >Get started</a
+      >
+    </div>
+  </nav>
+</header>
