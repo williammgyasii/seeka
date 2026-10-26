@@ -2,10 +2,14 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { respond } from '@/test/server'
 import App from './App'
 import { setupStore } from './store'
+
+beforeEach(() => {
+  respond('get', '/api/candidate/resume', undefined, 404)
+})
 
 const session = {
   userId: 'u1',

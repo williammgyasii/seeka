@@ -1,14 +1,19 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { z } from 'zod'
+import type { Resume } from '@/shared/api'
 import { splitList } from '@/shared/lib/format'
 import {
+  Alert,
+  AlertDescription,
   Button,
   ErrorMessage,
   Field,
   Input,
   Label,
+  Loading,
   Page,
   PageHeader,
   SectionCard,
@@ -22,6 +27,8 @@ import {
 import { useSaveCandidateMutation } from './onboardingApi'
 import { deviceTimeZone } from '@/shared/lib/countries'
 import { countryOptions, suggestResidence } from './residence'
+import { useGetCurrentResumeQuery } from './resumeApi'
+import { ResumeUpload } from './ResumeUpload'
 
 const setupSchema = z.object({
   fullName: z.string().min(2),
@@ -42,8 +49,56 @@ type SetupValues = z.infer<typeof setupSchema>
 
 const countries = countryOptions()
 
+/** Only facts the résumé stated replace a field; the rest keep their defaults. */
+function draftValues(resume: Resume): Partial<SetupValues> {
+  const draft = resume.draft
+  if (!draft) return {}
+  const values: Partial<SetupValues> = {}
+  if (draft.fullName) values.fullName = draft.fullName
+  if (draft.seniority) values.seniority = draft.seniority
+  if (draft.yearsOfExperience !== null) values.yearsOfExperience = draft.yearsOfExperience
+  if (draft.experienceSummary) values.experienceSummary = draft.experienceSummary
+  if (draft.skills.length) values.skills = draft.skills.join(', ')
+  if (draft.targetJobTitles.length) values.targetJobTitles = draft.targetJobTitles.join(', ')
+  return values
+}
+
+function resumeNote(resume: Resume): string {
+  switch (resume.status) {
+    case 'Extracted':
+      return `Filled in from ${resume.fileName}. Check every field before saving.`
+    case 'Unreadable':
+      return `We couldn't read any text in ${resume.fileName}, which happens with scanned PDFs. Please fill in the form.`
+    default:
+      return `We couldn't read ${resume.fileName} right now. Please fill in the form, or upload it again later.`
+  }
+}
+
+const header = (
+  <PageHeader
+    eyebrow="Profile setup"
+    title="Give assessments reliable facts."
+    description="Seeka uses these facts in match and outreach assessments. Nothing is saved until you save the form."
+  />
+)
+
 export function OnboardingPage({ timeZone = deviceTimeZone() }: { timeZone?: string }) {
+  const current = useGetCurrentResumeQuery()
+  if (current.isLoading)
+    return (
+      <Page>
+        {header}
+        <Loading />
+      </Page>
+    )
+  // A stored draft refills the form after a reload, without another AI call.
+  return <ProfileSetup timeZone={timeZone} stored={current.data ?? undefined} />
+}
+
+function ProfileSetup({ timeZone, stored }: { timeZone: string; stored?: Resume }) {
   const navigate = useNavigate()
+  const [step, setStep] = useState<'upload' | 'form'>(stored ? 'form' : 'upload')
+  const [applied, setApplied] = useState(stored)
   const form = useForm<SetupValues>({
     resolver: zodResolver(setupSchema),
     defaultValues: {
@@ -55,8 +110,14 @@ export function OnboardingPage({ timeZone = deviceTimeZone() }: { timeZone?: str
       availableWorkingHours: '',
       compensationCurrency: 'USD',
       yearsOfExperience: 0,
+      ...(stored && draftValues(stored)),
     },
   })
+  const applyResume = (resume: Resume) => {
+    form.reset({ ...form.getValues(), ...draftValues(resume) })
+    setApplied(resume)
+  }
+
   const [saveCandidate, mutation] = useSaveCandidateMutation()
   const save = async (values: SetupValues) => {
     const result = await saveCandidate({
@@ -71,13 +132,33 @@ export function OnboardingPage({ timeZone = deviceTimeZone() }: { timeZone?: str
     if (!result.error) navigate('/jobs/import')
   }
 
+  if (step === 'upload')
+    return (
+      <Page>
+        {header}
+        <ResumeUpload
+          onRead={(resume) => {
+            applyResume(resume)
+            setStep('form')
+          }}
+          onSkip={() => setStep('form')}
+        />
+      </Page>
+    )
+
   return (
     <Page>
-      <PageHeader
-        eyebrow="Profile setup"
-        title="Give assessments reliable facts."
-        description="Review every field before saving. Résumé extraction is not connected yet, so this working slice uses manual entry."
-      />
+      {header}
+      {applied && (
+        <Alert>
+          <AlertDescription className="flex flex-wrap items-center justify-between gap-3">
+            <span>{resumeNote(applied)}</span>
+            <Button type="button" variant="outline" size="sm" onClick={() => setStep('upload')}>
+              Upload a different résumé
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
       <form
         className="grid gap-6 xl:grid-cols-[1fr_.75fr]"
         onSubmit={form.handleSubmit(save)}
