@@ -58,4 +58,5 @@ jobs:
         with:
           name: lighthouse-reports
           path: seeka-marketing/.lighthouseci/
+          include-hidden-files: true
           retention-days: 7
