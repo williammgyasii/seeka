@@ -25,6 +25,10 @@ describe('API container routing', () => {
       EMAIL_API_TOKEN: 'email-secret',
       EMAIL_ACCOUNT_ID: 'account-id',
       APP_PUBLIC_URL: 'https://seeka.example',
+      OPENAI_API_KEY: 'openai-secret',
+      R2_ACCOUNT_ID: 'account-id',
+      R2_ACCESS_KEY_ID: 'r2-key-id',
+      R2_SECRET_ACCESS_KEY: 'r2-secret',
       INTERNAL_DEPLOY_TOKEN: 'must-not-enter-container',
     })
 
@@ -36,6 +40,10 @@ describe('API container routing', () => {
       App__PublicUrl: 'https://seeka.example',
       Email__CloudflareAccountId: 'account-id',
       Email__CloudflareApiToken: 'email-secret',
+      OpenAI__ApiKey: 'openai-secret',
+      Storage__R2AccountId: 'account-id',
+      Storage__R2AccessKeyId: 'r2-key-id',
+      Storage__R2SecretAccessKey: 'r2-secret',
     })
   })
 

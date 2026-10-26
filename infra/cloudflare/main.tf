@@ -72,3 +72,14 @@ resource "cloudflare_dns_record" "app" {
   ttl     = 1
   comment = "Seeka web app on Cloudflare Pages; managed by Terraform."
 }
+
+# Created in the dashboard first so a bucket-scoped R2 token could exist before the first deploy.
+import {
+  to = cloudflare_r2_bucket.resumes
+  id = "${var.cloudflare_account_id}/seeka-resumes/default"
+}
+
+resource "cloudflare_r2_bucket" "resumes" {
+  account_id = var.cloudflare_account_id
+  name       = "seeka-resumes"
+}

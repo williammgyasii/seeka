@@ -14,6 +14,10 @@ export type SeekaEdgeEnvironment = {
   EMAIL_API_TOKEN: string
   EMAIL_ACCOUNT_ID: string
   APP_PUBLIC_URL: string
+  OPENAI_API_KEY: string
+  R2_ACCOUNT_ID: string
+  R2_ACCESS_KEY_ID: string
+  R2_SECRET_ACCESS_KEY: string
   INTERNAL_DEPLOY_TOKEN?: string
 }
 
@@ -23,6 +27,10 @@ type ContainerValues = Pick<
   | 'EMAIL_API_TOKEN'
   | 'EMAIL_ACCOUNT_ID'
   | 'APP_PUBLIC_URL'
+  | 'OPENAI_API_KEY'
+  | 'R2_ACCOUNT_ID'
+  | 'R2_ACCESS_KEY_ID'
+  | 'R2_SECRET_ACCESS_KEY'
 >
 
 export function containerEnvironment(
@@ -36,6 +44,10 @@ export function containerEnvironment(
     App__PublicUrl: environment.APP_PUBLIC_URL,
     Email__CloudflareAccountId: environment.EMAIL_ACCOUNT_ID,
     Email__CloudflareApiToken: environment.EMAIL_API_TOKEN,
+    OpenAI__ApiKey: environment.OPENAI_API_KEY,
+    Storage__R2AccountId: environment.R2_ACCOUNT_ID,
+    Storage__R2AccessKeyId: environment.R2_ACCESS_KEY_ID,
+    Storage__R2SecretAccessKey: environment.R2_SECRET_ACCESS_KEY,
   }
 }
 
