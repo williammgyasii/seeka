@@ -20,6 +20,15 @@ const session = {
   emailVerified: true,
 }
 
+// Onboarding renders its header while the stored résumé loads, then again with
+// the form; wait for the form so the heading found is the one that stays.
+async function expectOnboardingReady() {
+  expect(await screen.findByLabelText(/résumé \(pdf\)/i)).toBeInTheDocument()
+  expect(
+    screen.getByRole('heading', { name: /give assessments reliable facts/i }),
+  ).toBeInTheDocument()
+}
+
 function renderAt(path: string) {
   return render(
     <Provider store={setupStore()}>
@@ -65,25 +74,21 @@ describe('Protected pages', () => {
     respond('get', '/api/auth/session', { ...session, onboardingComplete: false })
     renderAt('/dashboard')
 
-    expect(
-      await screen.findByRole('heading', { name: /give assessments reliable facts/i }),
-    ).toBeInTheDocument()
+    await expectOnboardingReady()
   })
 
   it('let a user with unfinished onboarding stay on onboarding', async () => {
     respond('get', '/api/auth/session', { ...session, onboardingComplete: false })
     renderAt('/onboarding')
 
-    expect(
-      await screen.findByRole('heading', { name: /give assessments reliable facts/i }),
-    ).toBeInTheDocument()
+    await expectOnboardingReady()
   })
 
   it('show onboarding as its own page, without app navigation but with sign-out', async () => {
     respond('get', '/api/auth/session', { ...session, onboardingComplete: false })
     renderAt('/onboarding')
 
-    await screen.findByRole('heading', { name: /give assessments reliable facts/i })
+    await expectOnboardingReady()
     expect(screen.queryByRole('link', { name: /pipeline/i })).not.toBeInTheDocument()
     expect(screen.queryByRole('link', { name: /dashboard/i })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument()
@@ -107,9 +112,7 @@ describe('Protected pages', () => {
     respond('get', '/api/auth/session', { ...session, onboardingComplete: false })
     renderAt('/verify-email')
 
-    expect(
-      await screen.findByRole('heading', { name: /give assessments reliable facts/i }),
-    ).toBeInTheDocument()
+    await expectOnboardingReady()
   })
 
   it('send a user who finished onboarding from onboarding to the dashboard', async () => {
