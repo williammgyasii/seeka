@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
@@ -96,6 +96,21 @@ describe('OnboardingPage', () => {
       expect(keys).toHaveLength(3)
       expect(keys[1]).toBe(keys[0])
       expect(keys[2]).not.toBe(keys[0])
+    })
+
+    it('accepts a résumé dragged onto the drop zone', async () => {
+      const upload = respond('post', '/api/candidate/resume', extracted)
+      const user = userEvent.setup()
+      renderSetup('UTC')
+
+      const zone = await screen.findByText(/drag your résumé here/i)
+      fireEvent.dragOver(zone, { dataTransfer: { files: [] } })
+      fireEvent.drop(zone, { dataTransfer: { files: [pdf('dropped.pdf')] } })
+
+      expect(screen.getByText('dropped.pdf')).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: /read my résumé/i }))
+      expect(await screen.findByLabelText(/full name/i)).toHaveValue('Ama Mensah')
+      expect(upload.calls[0].headers.get('Idempotency-Key')).toMatch(/^[0-9a-f-]{36}$/)
     })
 
     it('falls back to the empty form when the PDF has no readable text', async () => {
