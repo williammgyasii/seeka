@@ -53,6 +53,7 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     options.GlobalLimiter = ApiRateLimits.CreateGlobal();
     options.AddPolicy(ApiRateLimits.Auth, ApiRateLimits.AuthPartition);
+    options.AddPolicy(ApiRateLimits.Resume, ApiRateLimits.ResumePartition);
 });
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton(new AppLinks(builder.Configuration["App:PublicUrl"] ?? "http://localhost:5173"));

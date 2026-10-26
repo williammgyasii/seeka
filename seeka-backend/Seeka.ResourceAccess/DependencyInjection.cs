@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Seeka.Managers.Access.Accounts;
 using Seeka.Managers.Access.Candidates;
 using Seeka.Managers.Access.Email;
@@ -13,6 +14,7 @@ using Seeka.Managers.Access.Jobs;
 using Seeka.Managers.Access.Membership;
 using Seeka.Managers.Access.Outreach;
 using Seeka.Managers.Access.Pipeline;
+using Seeka.Managers.Access.Resumes;
 using Seeka.Managers;
 using Seeka.ResourceAccess.Accessors;
 using Seeka.ResourceAccess.BackgroundJobs;
@@ -77,6 +79,8 @@ public static class DependencyInjection
                 break;
         }
 
+        AddResumeAccess(services, configuration, environment);
+
         return services
             .AddScoped<IAccountAccess, AccountAccess>()
             .AddScoped<IMembershipAccess, MembershipAccess>()
@@ -84,6 +88,54 @@ public static class DependencyInjection
             .AddScoped<IJobAccess, JobAccess>()
             .AddScoped<IPipelineAccess, PipelineAccess>()
             .AddScoped<IOutreachAccess, OutreachAccess>();
+    }
+
+    private static void AddResumeAccess(
+        IServiceCollection services,
+        IConfiguration configuration,
+        IHostEnvironment environment)
+    {
+        services.AddScoped<IResumeAccess, ResumeAccess>();
+        services.AddSingleton<IPdfTextAccess, PdfTextAccess>();
+
+        if (configuration["OpenAI:ApiKey"] is { Length: > 0 } openAiKey)
+        {
+            services.AddSingleton(new OpenAiSettings(openAiKey, configuration["OpenAI:Model"] ?? "gpt-5.4-mini"));
+            services.AddHttpClient<IResumeExtractionAccess, OpenAiResumeExtractionAccess>(client =>
+                client.Timeout = TimeSpan.FromSeconds(60));
+        }
+        else
+        {
+            services.AddScoped<IResumeExtractionAccess, MissingResumeExtractionAccess>();
+        }
+
+        var accessKeyId = configuration["Storage:R2AccessKeyId"];
+        switch (ResumeStoragePolicy.Choose(environment.EnvironmentName, accessKeyId))
+        {
+            case ResumeStorage.R2:
+                var settings = new R2Settings(
+                    configuration["Storage:R2AccountId"]
+                        ?? throw new InvalidOperationException("Storage:R2AccountId is required with R2 keys."),
+                    accessKeyId!,
+                    configuration["Storage:R2SecretAccessKey"]
+                        ?? throw new InvalidOperationException("Storage:R2SecretAccessKey is required with R2 keys."),
+                    configuration["Storage:Bucket"] ?? "seeka-resumes");
+                services.AddSingleton(settings);
+                services.AddSingleton(R2ResumeFileAccess.CreateClient(settings));
+                services.AddSingleton<IResumeFileAccess, R2ResumeFileAccess>();
+                break;
+            case ResumeStorage.Local:
+                var root = configuration["Storage:LocalPath"]
+                    ?? Path.Combine(environment.ContentRootPath, ".data");
+                services.AddSingleton<IResumeFileAccess>(provider => new LocalResumeFileAccess(
+                    root,
+                    provider.GetRequiredService<ILogger<LocalResumeFileAccess>>()));
+                break;
+            default:
+                services.AddScoped<IResumeFileAccess>(_ => throw new InvalidOperationException(
+                    "Storage:R2AccessKeyId is required outside Development."));
+                break;
+        }
     }
 
     public static async Task MigrateSeekaDatabaseAsync(this IServiceProvider services)

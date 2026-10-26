@@ -171,7 +171,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.AppUser", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.AppUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -243,7 +243,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.CandidateProfile", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.CandidateProfile", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -293,7 +293,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("CandidateProfiles");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.Company", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.Company", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -316,7 +316,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("Companies");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.Contact", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.Contact", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -363,7 +363,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("Contacts");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.EligibilityAssessment", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.EligibilityAssessment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -409,7 +409,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("EligibilityAssessments");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.JobPosting", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.JobPosting", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -491,7 +491,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("JobPostings");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.JobPreference", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.JobPreference", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -531,7 +531,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("JobPreferences");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.JobSourceRecord", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.JobSourceRecord", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -579,7 +579,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("JobSourceRecords");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.MatchAssessment", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.MatchAssessment", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -616,7 +616,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("MatchAssessments");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.OutreachDraft", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.OutreachDraft", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -658,7 +658,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("OutreachDrafts");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.PipelineActivity", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.PipelineActivity", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -698,7 +698,52 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("PipelineActivities");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.SavedJob", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.Resume", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("ClaimedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DraftJson")
+                        .HasColumnType("jsonb");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsCurrent")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<Guid>("WorkspaceId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkspaceId")
+                        .HasFilter("\"IsCurrent\"");
+
+                    b.HasIndex("WorkspaceId", "IdempotencyKey")
+                        .IsUnique();
+
+                    b.ToTable("Resumes");
+                });
+
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.SavedJob", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -737,7 +782,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("SavedJobs");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.Workspace", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.Workspace", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -762,7 +807,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.ToTable("Workspaces");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.WorkspaceMembership", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.WorkspaceMembership", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -802,7 +847,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Seeka.ResourceAccess.Entities.AppUser", null)
+                    b.HasOne("Seeka.ResourceAccess.Persistence.Entities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -811,7 +856,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("Seeka.ResourceAccess.Entities.AppUser", null)
+                    b.HasOne("Seeka.ResourceAccess.Persistence.Entities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -826,7 +871,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Seeka.ResourceAccess.Entities.AppUser", null)
+                    b.HasOne("Seeka.ResourceAccess.Persistence.Entities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -835,16 +880,16 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("Seeka.ResourceAccess.Entities.AppUser", null)
+                    b.HasOne("Seeka.ResourceAccess.Persistence.Entities.AppUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.JobPosting", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.JobPosting", b =>
                 {
-                    b.HasOne("Seeka.ResourceAccess.Entities.Company", "Company")
+                    b.HasOne("Seeka.ResourceAccess.Persistence.Entities.Company", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -852,9 +897,9 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.Navigation("Company");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.JobSourceRecord", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.JobSourceRecord", b =>
                 {
-                    b.HasOne("Seeka.ResourceAccess.Entities.JobPosting", "JobPosting")
+                    b.HasOne("Seeka.ResourceAccess.Persistence.Entities.JobPosting", "JobPosting")
                         .WithMany()
                         .HasForeignKey("JobPostingId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -863,9 +908,18 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.Navigation("JobPosting");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.SavedJob", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.Resume", b =>
                 {
-                    b.HasOne("Seeka.ResourceAccess.Entities.JobPosting", "JobPosting")
+                    b.HasOne("Seeka.ResourceAccess.Persistence.Entities.Workspace", null)
+                        .WithMany()
+                        .HasForeignKey("WorkspaceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.SavedJob", b =>
+                {
+                    b.HasOne("Seeka.ResourceAccess.Persistence.Entities.JobPosting", "JobPosting")
                         .WithMany()
                         .HasForeignKey("JobPostingId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -874,15 +928,15 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.Navigation("JobPosting");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.WorkspaceMembership", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.WorkspaceMembership", b =>
                 {
-                    b.HasOne("Seeka.ResourceAccess.Entities.AppUser", "User")
+                    b.HasOne("Seeka.ResourceAccess.Persistence.Entities.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Seeka.ResourceAccess.Entities.Workspace", "Workspace")
+                    b.HasOne("Seeka.ResourceAccess.Persistence.Entities.Workspace", "Workspace")
                         .WithMany("Memberships")
                         .HasForeignKey("WorkspaceId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -893,7 +947,7 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.Navigation("Workspace");
                 });
 
-            modelBuilder.Entity("Seeka.ResourceAccess.Entities.Workspace", b =>
+            modelBuilder.Entity("Seeka.ResourceAccess.Persistence.Entities.Workspace", b =>
                 {
                     b.Navigation("Memberships");
                 });

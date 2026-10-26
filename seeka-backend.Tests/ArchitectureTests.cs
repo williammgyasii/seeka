@@ -57,7 +57,7 @@ public sealed partial class ArchitectureTests
     public void Managers_never_call_other_managers()
     {
         var managers = Managers.GetTypes().Where(IsManager).ToArray();
-        Assert.Equal(3, managers.Length);
+        Assert.Equal(4, managers.Length);
 
         AssertNone(
             managers.SelectMany(manager => ConstructorDependencies(manager)

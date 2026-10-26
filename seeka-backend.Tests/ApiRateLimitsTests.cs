@@ -32,6 +32,19 @@ public sealed class ApiRateLimitsTests
         Assert.True(limiter.AttemptAcquire(Anonymous("10.0.0.3")).IsAcquired);
     }
 
+    [Fact]
+    public void Resume_uploads_are_limited_per_user_per_hour()
+    {
+        var ama = ApiRateLimits.ResumePartition(SignedIn("ama", "10.0.0.1"));
+        using var limiter = ama.Factory(ama.PartitionKey);
+
+        for (var i = 0; i < ApiRateLimits.ResumeUploadsPerHour; i++)
+            Assert.True(limiter.AttemptAcquire().IsAcquired);
+
+        Assert.False(limiter.AttemptAcquire().IsAcquired);
+        Assert.Equal("user:ama", ama.PartitionKey);
+    }
+
     private static DefaultHttpContext SignedIn(string userId, string ip)
     {
         var context = Anonymous(ip);
