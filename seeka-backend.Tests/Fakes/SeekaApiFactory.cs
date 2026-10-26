@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Seeka.Managers.Access.Candidates;
 using Seeka.Managers.Access.Email;
 using Seeka.Managers.Access.Resumes;
 using Seeka.ResourceAccess.Persistence;
@@ -49,6 +50,8 @@ internal sealed class SeekaApiFactory : WebApplicationFactory<Program>
             services.AddSingleton<IPdfTextAccess>(new FakePdfTextAccess());
             services.RemoveAll<IResumeExtractionAccess>();
             services.AddSingleton<IResumeExtractionAccess>(Extractor);
+            services.RemoveAll<IJobTitleAccess>();
+            services.AddSingleton<IJobTitleAccess>(new FakeJobTitleAccess());
         });
     }
 }

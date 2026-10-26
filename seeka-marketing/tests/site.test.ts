@@ -123,6 +123,22 @@ describe('the landing page', () => {
     expect(types).toEqual(expect.arrayContaining(['Organization', 'WebSite', 'SoftwareApplication']))
   })
 
+  it('promises the résumé fills in every job, school, and certification, and invents nothing', () => {
+    const step = doc
+      .querySelectorAll('li')
+      .find((item) => item.querySelector('h3')?.text.trim() === 'Start from your résumé')
+    expect(step?.text).toMatch(/every job, school, and certification/i)
+    expect(step?.text).toMatch(/nothing is invented/i)
+  })
+
+  it('says the fit score uses the roles, level, timezone, and pay the user picked', () => {
+    const step = doc
+      .querySelectorAll('li')
+      .find((item) => item.querySelector('h3')?.text.trim() === 'Find out if a job is worth it')
+    expect(step?.text).toMatch(/roles you pick from a standard list/i)
+    expect(step?.text).toMatch(/seniority, timezone, and pay range in your own currency/i)
+  })
+
   it('says Seeka does not guarantee a job', () => {
     expect(doc.text).toContain('No job guarantee')
   })

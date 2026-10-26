@@ -5,21 +5,22 @@ namespace Seeka.Backend.Tests.Fakes;
 
 internal sealed class FakeCandidateAccess(CandidateSetupResponse? setup) : ICandidateAccess
 {
-    public Guid? SavedWorkspaceId { get; private set; }
-    public CandidateSetupRequest? Saved { get; private set; }
-
     public Task<CandidateSetupResponse?> FindSetupAsync(
         Guid workspaceId,
         CancellationToken cancellationToken) => Task.FromResult(setup);
 
-    public Task<CandidateSetupResponse> SaveSetupAsync(
+    public Task<StoredProfile> FindProfileAsync(Guid workspaceId, CancellationToken cancellationToken) =>
+        Task.FromResult(StoredProfile.Empty);
+
+    public Task SaveStepAsync(
         Guid workspaceId,
-        CandidateSetupRequest request,
+        ProfileStep step,
+        string[] completedSteps,
         DateTimeOffset updatedAt,
-        CancellationToken cancellationToken)
-    {
-        SavedWorkspaceId = workspaceId;
-        Saved = request;
-        return Task.FromResult(TestData.GhanaSetup(workspaceId));
-    }
+        CancellationToken cancellationToken) => throw new NotSupportedException();
+
+    public Task CompleteOnboardingAsync(
+        Guid workspaceId,
+        DateTimeOffset completedAt,
+        CancellationToken cancellationToken) => throw new NotSupportedException();
 }

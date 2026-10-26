@@ -19,7 +19,7 @@ public sealed partial class EmailVerificationGateTests : IDisposable
 
         var session = await browser.GetFromJsonAsync<JsonElement>("/api/auth/session");
         var pipeline = await browser.GetAsync("/api/pipeline");
-        var candidate = await browser.GetAsync("/api/candidate");
+        var candidate = await browser.GetAsync("/api/candidate/profile");
 
         Assert.False(session.GetProperty("emailVerified").GetBoolean());
         Assert.Equal(HttpStatusCode.Forbidden, pipeline.StatusCode);

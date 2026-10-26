@@ -22,7 +22,6 @@ internal static class TestData
                 workspaceId,
                 ["Executive Assistant"],
                 ["Full-time"],
-                "09:00-17:00 UTC",
                 null,
                 null,
                 DateTimeOffset.UtcNow));

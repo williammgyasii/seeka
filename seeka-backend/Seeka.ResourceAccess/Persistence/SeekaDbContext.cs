@@ -58,6 +58,8 @@ public sealed class SeekaDbContext(
             entity.Property(item => item.FullName).HasMaxLength(160);
             entity.Property(item => item.CountryOfResidence).HasMaxLength(100);
             entity.Property(item => item.TimeZone).HasMaxLength(100);
+            entity.Property(item => item.Headline).HasMaxLength(120);
+            entity.Property(item => item.DetailsJson).HasColumnType("jsonb");
         });
 
         builder.Entity<Resume>(entity =>
@@ -78,6 +80,7 @@ public sealed class SeekaDbContext(
             entity.HasIndex(item => item.WorkspaceId).IsUnique();
             entity.Property(item => item.CompensationCurrency).HasMaxLength(3);
             entity.Property(item => item.MinimumCompensation).HasPrecision(18, 2);
+            entity.Property(item => item.MaximumCompensation).HasPrecision(18, 2);
         });
 
         builder.Entity<Company>(entity =>

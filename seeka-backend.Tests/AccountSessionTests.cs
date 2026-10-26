@@ -39,22 +39,25 @@ public sealed class AccountSessionTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task Session_reports_onboarding_complete_once_a_candidate_profile_exists()
+    public async Task Session_reports_onboarding_complete_only_once_it_is_finished()
     {
         var (user, workspace) = await CreateUserAsync("ama@example.com");
-
-        var before = await accounts.FindSessionAsync(user.Id, default);
-        db.CandidateProfiles.Add(new CandidateProfile
+        var profile = new CandidateProfile
         {
             Id = Guid.NewGuid(),
             WorkspaceId = workspace.Id,
             FullName = "Ama Mensah"
-        });
-        await db.SaveChangesAsync();
-        var after = await accounts.FindSessionAsync(user.Id, default);
+        };
 
-        Assert.False(before!.OnboardingComplete);
-        Assert.True(after!.OnboardingComplete);
+        db.CandidateProfiles.Add(profile);
+        await db.SaveChangesAsync();
+        var started = await accounts.FindSessionAsync(user.Id, default);
+        profile.OnboardingCompletedAt = DateTimeOffset.UtcNow;
+        await db.SaveChangesAsync();
+        var finished = await accounts.FindSessionAsync(user.Id, default);
+
+        Assert.False(started!.OnboardingComplete);
+        Assert.True(finished!.OnboardingComplete);
     }
 
     [Fact]

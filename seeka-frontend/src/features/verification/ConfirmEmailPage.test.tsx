@@ -43,6 +43,7 @@ describe('Verification link page', () => {
     respond('get', '/api/auth/session', { ...session, emailVerified: true })
     respond('post', '/api/auth/verify-email')
     respond('get', '/api/candidate/resume', undefined, 404)
+    respond('get', '/api/candidate/profile', { completedSteps: [], onboardingComplete: false })
     const user = userEvent.setup()
     openLink()
 

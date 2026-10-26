@@ -1,3 +1,9 @@
+export {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from './primitives/accordion'
 export { Alert, AlertDescription, AlertTitle } from './primitives/alert'
 export { Badge } from './primitives/badge'
 export { Button } from './primitives/button'

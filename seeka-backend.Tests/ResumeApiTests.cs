@@ -8,7 +8,7 @@ using Seeka.Backend.Tests.Fakes;
 
 namespace Seeka.Backend.Tests;
 
-public sealed partial class ResumeApiTests : IDisposable
+public sealed class ResumeApiTests : IDisposable
 {
     private static readonly byte[] Pdf = Encoding.ASCII.GetBytes("%PDF-1.7 résumé");
     private readonly SeekaApiFactory api = new();
@@ -122,33 +122,7 @@ public sealed partial class ResumeApiTests : IDisposable
         return browser.SendAsync(request);
     }
 
-    private async Task<HttpClient> VerifiedAsync()
-    {
-        var browser = await RegisterAsync("esi@example.org");
-        var match = VerificationLink().Match(api.Email.Sent.Single().Content.Text);
-        var verify = await browser.PostAsJsonAsync("/api/auth/verify-email", new
-        {
-            userId = Guid.Parse(match.Groups["userId"].Value),
-            token = Uri.UnescapeDataString(match.Groups["token"].Value)
-        });
-        Assert.Equal(HttpStatusCode.NoContent, verify.StatusCode);
-        return browser;
-    }
+    private Task<HttpClient> VerifiedAsync() => TestBrowsers.VerifiedAsync(api);
 
-    private async Task<HttpClient> RegisterAsync(string email)
-    {
-        var browser = api.CreateBrowser();
-        var response = await browser.PostAsJsonAsync("/api/auth/register", new
-        {
-            email,
-            password = "Str0ng!Passw0rd",
-            displayName = "Esi",
-            phoneNumber = "+233241234567"
-        });
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        return browser;
-    }
-
-    [GeneratedRegex(@"/verify-email/confirm\?userId=(?<userId>[0-9a-f-]+)&token=(?<token>[^\s]+)")]
-    private static partial Regex VerificationLink();
+    private Task<HttpClient> RegisterAsync(string email) => TestBrowsers.RegisteredAsync(api, email);
 }

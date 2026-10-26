@@ -28,6 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Reference\esco-occupations.json" LogicalName="esco-occupations.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Seeka.Managers\Seeka.Managers.csproj" />
     <ProjectReference Include="..\Seeka.Engines\Seeka.Engines.csproj" />
   </ItemGroup>
