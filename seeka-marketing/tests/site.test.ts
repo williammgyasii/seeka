@@ -122,6 +122,19 @@ describe('the landing page', () => {
     const types = jsonLd(doc).map((item) => item['@type'])
     expect(types).toEqual(expect.arrayContaining(['Organization', 'WebSite', 'SoftwareApplication']))
   })
+
+  it('says Seeka does not guarantee a job', () => {
+    expect(doc.text).toContain('No job guarantee')
+  })
+
+  it('answers "Will Seeka get me a job?" first, on the page and for search', () => {
+    const faq = jsonLd(doc).find((item) => item['@type'] === 'FAQPage')
+    const [first] = faq?.mainEntity as Array<{ name: string; acceptedAnswer: { text: string } }>
+    expect(first.name).toBe('Will Seeka get me a job?')
+    expect(first.acceptedAnswer.text).toMatch(/^No\b/)
+    expect(first.acceptedAnswer.text).toMatch(/you send it/i)
+    expect(doc.text).toContain('Will Seeka get me a job?')
+  })
 })
 
 describe('the guides', () => {

@@ -7,3 +7,7 @@ alwaysApply: true
 Follow the global OpenSpec workflow for this project. Treat `openspec/specs/`
 and `openspec/changes/` as the source of truth, and use the generated
 `.cursor/commands/opsx-*.md` commands for OpenSpec work.
+
+Every change says how we sell it, and the marketing site (`seeka-marketing/`)
+updates in the same release as the feature. The rules live in
+`openspec/config.yaml`.

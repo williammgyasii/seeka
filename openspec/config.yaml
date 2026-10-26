@@ -11,13 +11,19 @@ schema: spec-driven
 
 # Per-artifact rules (optional)
 # Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always include a "Non-goals" section
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+rules:
+  proposal:
+    - >-
+      Include a "## How we sell it" section: the one-sentence promise to a job
+      seeker, who it is for, what it does NOT do, and the marketing page or
+      guide it changes on seekajobs.tech. For a change users never see, write
+      "No marketing change" and the reason.
+  tasks:
+    - >-
+      If the proposal sells something, add a final task group "Marketing" that
+      updates seeka-marketing in the same release as the feature, with a site
+      test for the new copy. Never describe unreleased work as available;
+      label it "coming soon".
 
 # Per-operation guidance (optional)
 # Add advisory guidance for how apply and archive work should be conducted.
