@@ -49,8 +49,9 @@ describe('Verification link page', () => {
     await screen.findByRole('heading', { name: /your email is verified/i })
     await user.click(await screen.findByRole('link', { name: /continue/i }))
 
+    expect(await screen.findByLabelText(/résumé \(pdf\)/i)).toBeInTheDocument()
     expect(
-      await screen.findByRole('heading', { name: /give assessments reliable facts/i }),
+      screen.getByRole('heading', { name: /give assessments reliable facts/i }),
     ).toBeInTheDocument()
   })
 

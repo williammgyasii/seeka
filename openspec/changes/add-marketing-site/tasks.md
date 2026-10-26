@@ -1,7 +1,7 @@
 ## 1. App hand-off
 
-- [ ] 1.1 Failing frontend tests: `index.html` carries `noindex`; `/login?mode=register` shows account creation
-- [ ] 1.2 Add the meta tag and read `mode` from the query; verify tests, lint, and build
+- [x] 1.1 Failing frontend tests: `index.html` carries `noindex`; `/login?mode=register` shows account creation
+- [x] 1.2 Add the meta tag and read `mode` from the query; verify tests, lint, and build
 
 ## 2. Site skeleton and SEO contract
 
