@@ -26,6 +26,7 @@ public sealed class SeekaDbContext(
     public DbSet<Contact> Contacts => Set<Contact>();
     public DbSet<OutreachDraft> OutreachDrafts => Set<OutreachDraft>();
     public DbSet<PipelineActivity> PipelineActivities => Set<PipelineActivity>();
+    public DbSet<Resume> Resumes => Set<Resume>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -57,6 +58,19 @@ public sealed class SeekaDbContext(
             entity.Property(item => item.FullName).HasMaxLength(160);
             entity.Property(item => item.CountryOfResidence).HasMaxLength(100);
             entity.Property(item => item.TimeZone).HasMaxLength(100);
+        });
+
+        builder.Entity<Resume>(entity =>
+        {
+            entity.HasIndex(item => new { item.WorkspaceId, item.IdempotencyKey }).IsUnique();
+            entity.HasIndex(item => item.WorkspaceId).HasFilter("\"IsCurrent\"");
+            entity.Property(item => item.FileName).HasMaxLength(120);
+            entity.Property(item => item.Status).HasMaxLength(20);
+            entity.Property(item => item.DraftJson).HasColumnType("jsonb");
+            entity.HasOne<Workspace>()
+                .WithMany()
+                .HasForeignKey(item => item.WorkspaceId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         builder.Entity<JobPreference>(entity =>

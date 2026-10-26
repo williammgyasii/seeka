@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Seeka.Managers.Access.Email;
+using Seeka.Managers.Access.Resumes;
 using Seeka.ResourceAccess.Persistence;
 
 namespace Seeka.Backend.Tests.Fakes;
@@ -16,6 +17,8 @@ internal sealed class SeekaApiFactory : WebApplicationFactory<Program>
     private readonly string databaseName = Guid.NewGuid().ToString();
 
     public FakeEmailAccess Email { get; } = new();
+    public FakeResumeFileAccess ResumeFiles { get; } = new();
+    public FakeResumeExtractionAccess Extractor { get; } = new();
 
     public HttpClient CreateBrowser() =>
         CreateClient(new WebApplicationFactoryClientOptions
@@ -40,6 +43,12 @@ internal sealed class SeekaApiFactory : WebApplicationFactory<Program>
                 .ConfigureWarnings(warnings => warnings.Ignore(InMemoryEventId.TransactionIgnoredWarning)));
             services.RemoveAll<IEmailAccess>();
             services.AddSingleton<IEmailAccess>(Email);
+            services.RemoveAll<IResumeFileAccess>();
+            services.AddSingleton<IResumeFileAccess>(ResumeFiles);
+            services.RemoveAll<IPdfTextAccess>();
+            services.AddSingleton<IPdfTextAccess>(new FakePdfTextAccess());
+            services.RemoveAll<IResumeExtractionAccess>();
+            services.AddSingleton<IResumeExtractionAccess>(Extractor);
         });
     }
 }

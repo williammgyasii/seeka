@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Seeka.Managers.JobSearch;
 using Seeka.Managers.Membership;
 using Seeka.Managers.Outreach;
+using Seeka.Managers.Resumes;
 
 namespace Seeka.Managers;
 
@@ -11,5 +12,6 @@ public static class DependencyInjection
         services
             .AddScoped<MembershipManager>()
             .AddScoped<JobSearchManager>()
-            .AddScoped<OutreachManager>();
+            .AddScoped<OutreachManager>()
+            .AddScoped<ResumeManager>();
 }
