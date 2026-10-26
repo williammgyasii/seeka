@@ -5,14 +5,14 @@
 
 ## 2. Site skeleton and SEO contract
 
-- [ ] 2.1 Scaffold `seeka-marketing` (Astro, Tailwind, sitemap); failing tests over `dist` for metadata, JSON-LD, sitemap, robots, 404, and sign-up links
-- [ ] 2.2 `BaseLayout`, `robots.txt`, 404 page, and the redirect middleware with its tests; verify green
+- [x] 2.1 Scaffold `seeka-marketing` (Astro, Tailwind, sitemap); failing tests over `dist` for metadata, JSON-LD, sitemap, robots, 404, and sign-up links
+- [x] 2.2 `BaseLayout`, `robots.txt`, 404 page, and the redirect middleware with its tests; verify green
 
 ## 3. Content
 
-- [ ] 3.1 Landing page from the approved copy
-- [ ] 3.2 Guides index and four guides with `Article` JSON-LD
-- [ ] 3.3 Visual check in the browser at mobile and desktop widths
+- [x] 3.1 Landing page from the approved copy
+- [x] 3.2 Guides index and four guides with `Article` JSON-LD
+- [x] 3.3 Visual check in the browser at mobile and desktop widths
 
 ## 4. Delivery
 

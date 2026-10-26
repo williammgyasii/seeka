@@ -1,0 +1,15 @@
+---
+type Props = { onDark?: boolean }
+const { onDark = false } = Astro.props
+---
+
+<span class="flex items-center gap-2.5 font-semibold">
+  <span
+    class:list={[
+      'grid size-9 place-items-center rounded-lg text-lg font-black',
+      onDark ? 'bg-highlight text-highlight-foreground' : 'bg-ink text-highlight',
+    ]}
+    aria-hidden="true">S</span
+  >
+  <span class="text-xl tracking-tight">Seeka</span>
+</span>

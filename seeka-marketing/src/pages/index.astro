@@ -1,0 +1,259 @@
+---
+import CallToAction from '../components/CallToAction.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { guides } from '../lib/guides'
+import { ORIGIN, PROMISE, REGISTER_URL, SITE_NAME, organization } from '../lib/site'
+
+const title = 'Seeka: stop applying cold and reach a real person inside the company'
+const description =
+  'Applied everywhere and heard nothing? Seeka tells you which jobs fit your résumé, then helps you reach the recruiter or hiring manager with a message written from your real experience.'
+
+const faqs = [
+  {
+    q: 'Is Seeka a job board?',
+    a: 'No. Job boards help you find openings. Seeka helps with what comes next: deciding which openings are worth your time and getting your application in front of a person instead of a pile.',
+  },
+  {
+    q: 'Who is Seeka for?',
+    a: 'Anyone applying for jobs, from a first role to a senior one, who is tired of sending applications and hearing nothing back.',
+  },
+  {
+    q: 'Does Seeka apply or send messages for me?',
+    a: 'No. Seeka drafts, you decide. Nothing is sent without you, and nothing is invented about your experience.',
+  },
+  {
+    q: 'What does it cost?',
+    a: 'Creating an account is free.',
+  },
+]
+
+const steps = [
+  {
+    title: 'Start from your résumé',
+    body: 'Upload a PDF and Seeka fills in your profile: your skills, seniority, and the roles you want. You check every field before anything is saved.',
+  },
+  {
+    title: 'Find out if a job is worth it',
+    body: 'Paste a job and Seeka scores how well it fits you, shows the reasons, and flags where the employer can and cannot hire before you spend an evening on it.',
+  },
+  {
+    title: 'Reach the people who hire',
+    body: 'Add the recruiter or hiring manager and Seeka drafts an email, a LinkedIn note, and a follow-up from your real experience. Finding those people automatically is coming soon.',
+  },
+]
+
+const structuredData = [
+  organization,
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE_NAME,
+    url: ORIGIN,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: SITE_NAME,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Web',
+    url: ORIGIN,
+    description: PROMISE,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(({ q, a }) => ({
+      '@type': 'Question',
+      name: q,
+      acceptedAnswer: { '@type': 'Answer', text: a },
+    })),
+  },
+]
+---
+
+<BaseLayout title={title} description={description} path="/" structuredData={structuredData}>
+  <section class="relative overflow-hidden bg-ink text-white">
+    <div
+      class="pointer-events-none absolute -top-40 -right-32 size-[34rem] rounded-full bg-highlight/20 blur-3xl"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 sm:py-28 lg:grid-cols-[1.15fr_1fr]">
+      <div>
+        <p class="mb-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-sm text-white/85">
+          <span class="size-2 rounded-full bg-highlight" aria-hidden="true"></span>
+          For anyone tired of the silence after applying
+        </p>
+        <h1 class="text-5xl leading-[1.02] font-semibold tracking-tight sm:text-7xl">
+          You applied.<br /><span class="text-highlight">Nobody replied.</span>
+        </h1>
+        <p class="mt-6 max-w-xl text-lg text-white/85 sm:text-xl">{PROMISE}</p>
+        <div class="mt-9 flex flex-wrap gap-3">
+          <a
+            href={REGISTER_URL}
+            class="rounded-lg bg-highlight px-6 py-3.5 text-base font-semibold text-highlight-foreground transition-transform hover:-translate-y-0.5 motion-reduce:transition-none"
+            >Get started free</a
+          >
+          <a
+            href="#how-it-works"
+            class="rounded-lg px-6 py-3.5 text-base font-semibold text-white ring-1 ring-white/30 hover:bg-white/10"
+            >See how it works</a
+          >
+        </div>
+      </div>
+
+      <div class="relative" aria-hidden="true">
+        <div class="rounded-2xl bg-white p-6 text-foreground shadow-2xl shadow-black/30">
+          <p class="text-xs font-medium tracking-wide text-muted-foreground uppercase">Job check</p>
+          <p class="mt-1 text-lg font-semibold">Senior HR Business Partner</p>
+          <p class="text-sm text-muted-foreground">Northwind · Full-time</p>
+          <div class="mt-5 grid gap-3 text-sm">
+            <div>
+              <div class="flex justify-between"><span>Skills</span><span class="font-medium">Strong</span></div>
+              <div class="mt-1 h-2 rounded-full bg-muted"><div class="h-2 w-[86%] rounded-full bg-success"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between"><span>Seniority</span><span class="font-medium">Match</span></div>
+              <div class="mt-1 h-2 rounded-full bg-muted"><div class="h-2 w-[92%] rounded-full bg-success"></div></div>
+            </div>
+            <div>
+              <div class="flex justify-between"><span>Can hire where you live</span><span class="font-medium">Yes</span></div>
+              <div class="mt-1 h-2 rounded-full bg-muted"><div class="h-2 w-full rounded-full bg-success"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="relative -mt-4 ml-8 rounded-2xl bg-highlight p-5 text-highlight-foreground shadow-xl sm:ml-16">
+          <p class="text-xs font-semibold tracking-wide uppercase">Draft to the hiring manager</p>
+          <p class="mt-2 text-sm leading-relaxed">
+            "Hi Dana, I led onboarding for a 300-person team at my last company and saw you're
+            hiring for the same problem…"
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5 py-20 sm:py-24">
+    <h2 class="max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
+      Sending more applications won't fix it.
+    </h2>
+    <div class="mt-10 grid gap-8 sm:grid-cols-3">
+      <div>
+        <p class="text-lg font-semibold">The pile</p>
+        <p class="mt-2 text-muted-foreground">
+          A popular opening can collect hundreds of applications. Yours arrives as one more row in
+          a list.
+        </p>
+      </div>
+      <div>
+        <p class="text-lg font-semibold">The filter</p>
+        <p class="mt-2 text-muted-foreground">
+          Software and busy recruiters screen that list fast. Small mismatches end the conversation
+          before a person reads your story.
+        </p>
+      </div>
+      <div>
+        <p class="text-lg font-semibold">The silence</p>
+        <p class="mt-2 text-muted-foreground">
+          You never learn why. So you send more of the same, and the pile, not your odds, gets
+          bigger.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how-it-works" class="scroll-mt-8 bg-muted">
+    <div class="mx-auto max-w-6xl px-5 py-20 sm:py-24">
+      <h2 class="max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
+        Fewer applications. Each one to a person.
+      </h2>
+      <ol class="mt-10 grid gap-6 sm:grid-cols-3">
+        {
+          steps.map((step, index) => (
+            <li class="rounded-2xl border border-border bg-white p-6">
+              <span class="grid size-9 place-items-center rounded-full bg-ink text-sm font-semibold text-highlight">
+                {index + 1}
+              </span>
+              <h3 class="mt-4 text-lg font-semibold">{step.title}</h3>
+              <p class="mt-2 text-muted-foreground">{step.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="mx-auto grid max-w-6xl gap-10 px-5 py-20 sm:py-24 lg:grid-cols-2">
+    <div>
+      <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl">Seeka drafts. You send.</h2>
+      <p class="mt-4 text-lg text-muted-foreground">
+        Outreach only works when it is honest. Seeka writes from what is actually on your résumé
+        and leaves the final word to you.
+      </p>
+    </div>
+    <ul class="grid gap-4">
+      <li class="rounded-xl border border-border p-5">
+        <p class="font-semibold">Nothing goes out without you</p>
+        <p class="mt-1 text-muted-foreground">Every draft waits for you to edit, copy, and send.</p>
+      </li>
+      <li class="rounded-xl border border-border p-5">
+        <p class="font-semibold">Nothing is invented</p>
+        <p class="mt-1 text-muted-foreground">
+          Drafts use your real experience. Unknown details stay marked as unknown.
+        </p>
+      </li>
+      <li class="rounded-xl border border-border p-5">
+        <p class="font-semibold">Your résumé stays private</p>
+        <p class="mt-1 text-muted-foreground">It is stored with your account and used for your profile only.</p>
+      </li>
+    </ul>
+  </section>
+
+  <section class="border-t border-border">
+    <div class="mx-auto max-w-6xl px-5 py-20 sm:py-24">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl">Stuck right now? Start here.</h2>
+        <a href="/guides/" class="font-medium text-ink underline underline-offset-4">All guides</a>
+      </div>
+      <ul class="mt-10 grid gap-4 sm:grid-cols-2">
+        {
+          guides.map((guide) => (
+            <li>
+              <a
+                href={guide.path}
+                class="block h-full rounded-xl border border-border p-6 transition-colors hover:border-ink"
+              >
+                <p class="text-lg font-semibold">{guide.title}</p>
+                <p class="mt-2 text-muted-foreground">{guide.summary}</p>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="bg-muted">
+    <div class="mx-auto max-w-3xl px-5 py-20 sm:py-24">
+      <h2 class="text-3xl font-semibold tracking-tight sm:text-4xl">Questions</h2>
+      <dl class="mt-8 grid gap-6">
+        {
+          faqs.map(({ q, a }) => (
+            <div>
+              <dt class="text-lg font-semibold">{q}</dt>
+              <dd class="mt-1 text-muted-foreground">{a}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-5 py-20 sm:py-24">
+    <CallToAction
+      title="Your next application goes to a person."
+      body="Upload your résumé, check your first job, and write to someone who can say yes."
+    />
+  </section>
+</BaseLayout>
