@@ -1,0 +1,53 @@
+name: Marketing CI
+
+on:
+  pull_request:
+    paths:
+      - seeka-marketing/**
+      - .github/workflows/marketing-ci.yml
+  push:
+    branches:
+      - main
+    paths:
+      - seeka-marketing/**
+      - .github/workflows/marketing-ci.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: marketing-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    name: Marketing
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ASTRO_TELEMETRY_DISABLED: '1'
+    defaults:
+      run:
+        working-directory: seeka-marketing
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: seeka-marketing/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test built pages
+        run: npm test
+
+      - name: Lighthouse budgets
+        run: npm run lighthouse

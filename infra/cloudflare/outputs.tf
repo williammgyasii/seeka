@@ -13,6 +13,11 @@ output "worker_name" {
   value       = cloudflare_worker.api.name
 }
 
+output "marketing_url" {
+  description = "Public marketing site."
+  value       = "https://${cloudflare_pages_domain.marketing_apex.name}"
+}
+
 output "app_url" {
   description = "Branded production URL for the web app."
   value       = "https://${cloudflare_pages_domain.app.name}"
