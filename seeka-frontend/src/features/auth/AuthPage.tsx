@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { isValidPhoneNumber, parsePhoneNumber, type CountryCode } from 'libphonenumber-js'
 import { Controller, useForm, useWatch } from 'react-hook-form'
+import { useSearchParams } from 'react-router-dom'
 import { z } from 'zod'
 import { countryCodeForTimeZone, deviceTimeZone } from '@/shared/lib/countries'
 import { Brand, Button, Card, CardContent, ErrorMessage, Field, Input } from '@/shared/ui'
@@ -33,10 +34,11 @@ type AuthValues = z.infer<typeof authSchema>
 
 export function AuthPage({ timeZone = deviceTimeZone() }: { timeZone?: string }) {
   const suggestedCountry = countryCodeForTimeZone(timeZone)
+  const [searchParams] = useSearchParams()
   const form = useForm<AuthValues>({
     resolver: zodResolver(authSchema),
     defaultValues: {
-      mode: 'login',
+      mode: searchParams.get('mode') === 'register' ? 'register' : 'login',
       displayName: '',
       email: '',
       password: '',

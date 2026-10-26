@@ -72,3 +72,29 @@ describe('Sign-up form', () => {
     })
   })
 })
+
+describe('Entry from the marketing site', () => {
+  function openAt(path: string) {
+    respond('get', '/api/auth/session', null, 401)
+    render(
+      <Provider store={setupStore()}>
+        <MemoryRouter initialEntries={[path]}>
+          <AuthPage timeZone="UTC" />
+        </MemoryRouter>
+      </Provider>,
+    )
+  }
+
+  it('opens on account creation with ?mode=register', () => {
+    openAt('/login?mode=register')
+
+    expect(screen.getByText(/create your workspace/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/full name/i)).toBeInTheDocument()
+  })
+
+  it('opens on sign-in without it', () => {
+    openAt('/login')
+
+    expect(screen.getByText(/welcome back/i)).toBeInTheDocument()
+  })
+})
