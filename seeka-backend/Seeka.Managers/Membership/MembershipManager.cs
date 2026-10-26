@@ -1,18 +1,12 @@
 using Seeka.Engines.Accounts;
-using Seeka.Engines.Intake;
 using Seeka.Managers.Access.Accounts;
-using Seeka.Managers.Access.Candidates;
 using Seeka.Managers.Access.Email;
-using Seeka.Managers.Access.Membership;
 using Seeka.Managers.Contracts.Accounts;
-using Seeka.Managers.Contracts.Candidates;
 
 namespace Seeka.Managers.Membership;
 
 public sealed class MembershipManager(
     IAccountAccess accounts,
-    IMembershipAccess memberships,
-    ICandidateAccess candidates,
     IEmailAccess email,
     AppLinks links,
     TimeProvider timeProvider)
@@ -119,53 +113,4 @@ public sealed class MembershipManager(
 
     public Task<SessionResponse?> FindSessionAsync(Guid userId, CancellationToken cancellationToken) =>
         accounts.FindSessionAsync(userId, cancellationToken);
-
-    public async Task<CandidateSetupResponse?> FindCandidateSetupAsync(
-        Guid userId,
-        CancellationToken cancellationToken)
-    {
-        var workspace = await memberships.RequireWorkspaceAsync(userId, cancellationToken);
-        return await candidates.FindSetupAsync(workspace.WorkspaceId, cancellationToken);
-    }
-
-    public async Task<CandidateSetupResponse> SaveCandidateSetupAsync(
-        Guid userId,
-        CandidateSetupRequest request,
-        CancellationToken cancellationToken)
-    {
-        Validate(request);
-        var workspace = await memberships.RequireWorkspaceAsync(userId, cancellationToken);
-        var normalized = request with
-        {
-            FullName = request.FullName.Trim(),
-            CountryOfResidence = request.CountryOfResidence.Trim(),
-            TimeZone = request.TimeZone.Trim(),
-            Seniority = request.Seniority.Trim(),
-            ExperienceSummary = request.ExperienceSummary.Trim(),
-            Skills = IntakeRules.CleanList(request.Skills),
-            TargetJobTitles = IntakeRules.CleanList(request.TargetJobTitles),
-            EmploymentTypes = IntakeRules.CleanList(request.EmploymentTypes),
-            AvailableWorkingHours = request.AvailableWorkingHours.Trim(),
-            CompensationCurrency = IntakeRules.Currency(request.CompensationCurrency)
-        };
-        return await candidates.SaveSetupAsync(
-            workspace.WorkspaceId,
-            normalized,
-            timeProvider.GetUtcNow(),
-            cancellationToken);
-    }
-
-    private static void Validate(CandidateSetupRequest request)
-    {
-        if (string.IsNullOrWhiteSpace(request.FullName) ||
-            string.IsNullOrWhiteSpace(request.CountryOfResidence) ||
-            string.IsNullOrWhiteSpace(request.TimeZone) ||
-            request.TargetJobTitles.Length == 0)
-            throw new ArgumentException("Name, residence, timezone, and a target role are required.");
-        if (request.YearsOfExperience < 0)
-            throw new ArgumentOutOfRangeException(nameof(request.YearsOfExperience));
-        if (request.MinimumCompensation is not null &&
-            string.IsNullOrWhiteSpace(request.CompensationCurrency))
-            throw new ArgumentException("Compensation currency is required with a minimum.");
-    }
 }

@@ -1,7 +1,6 @@
 using Seeka.Backend.Tests.Fakes;
 using Seeka.Managers.Access.Accounts;
 using Seeka.Managers.Contracts.Accounts;
-using Seeka.Managers.Contracts.Candidates;
 using Seeka.Managers.Membership;
 
 namespace Seeka.Backend.Tests;
@@ -15,7 +14,7 @@ public sealed class MembershipManagerTests
     public async Task Blank_display_name_is_rejected_before_creating_an_account()
     {
         var accounts = new FakeAccountAccess();
-        var manager = Create(accounts, new FakeCandidateAccess(null));
+        var manager = Create(accounts);
 
         var creation = await manager.RegisterAsync(
             new RegisterRequest("ama@example.com", "Str0ng!Passw0rd", " ", "+233241234567"),
@@ -33,7 +32,7 @@ public sealed class MembershipManagerTests
     public async Task Invalid_phone_number_is_rejected_before_creating_an_account(string phone)
     {
         var accounts = new FakeAccountAccess();
-        var manager = Create(accounts, new FakeCandidateAccess(null));
+        var manager = Create(accounts);
 
         var creation = await manager.RegisterAsync(
             new RegisterRequest("ama@example.com", "Str0ng!Passw0rd", "Ama", phone),
@@ -48,7 +47,7 @@ public sealed class MembershipManagerTests
     public async Task Registration_stores_the_phone_in_E164_and_signs_the_new_user_in()
     {
         var accounts = new FakeAccountAccess();
-        var manager = Create(accounts, new FakeCandidateAccess(null));
+        var manager = Create(accounts);
 
         var creation = await manager.RegisterAsync(
             new RegisterRequest(" ama@example.com ", "Str0ng!Passw0rd", " Ama ", "+233 24 123 4567"),
@@ -62,29 +61,10 @@ public sealed class MembershipManagerTests
     }
 
     [Fact]
-    public async Task Candidate_setup_is_saved_normalized_into_the_users_workspace()
-    {
-        var candidates = new FakeCandidateAccess(null);
-        var manager = Create(new FakeAccountAccess(), candidates);
-
-        await manager.SaveCandidateSetupAsync(
-            UserId,
-            new CandidateSetupRequest(" Ama Mensah ", "Ghana", "Africa/Accra", "Mid-level", 5,
-                "Supports executives.", ["Excel", " ", "excel"], ["Executive Assistant"],
-                ["Full-time"], "08:00-18:00 GMT", 2500, " usd "),
-            default);
-
-        Assert.Equal(WorkspaceId, candidates.SavedWorkspaceId);
-        Assert.Equal("Ama Mensah", candidates.Saved!.FullName);
-        Assert.Equal(["Excel"], candidates.Saved.Skills);
-        Assert.Equal("USD", candidates.Saved.CompensationCurrency);
-    }
-
-    [Fact]
     public async Task Registration_sends_a_verification_email_to_the_new_address()
     {
         var email = new FakeEmailAccess();
-        var manager = Create(new FakeAccountAccess(), new FakeCandidateAccess(null), email);
+        var manager = Create(new FakeAccountAccess(), email);
 
         await manager.RegisterAsync(
             new RegisterRequest("esi@example.org", "Str0ng!Passw0rd", "Esi Owusu", "+233241234567"),
@@ -100,7 +80,7 @@ public sealed class MembershipManagerTests
     public async Task Registration_succeeds_when_the_email_provider_fails()
     {
         var accounts = new FakeAccountAccess();
-        var manager = Create(accounts, new FakeCandidateAccess(null), new FakeEmailAccess(succeeds: false));
+        var manager = Create(accounts, new FakeEmailAccess(succeeds: false));
 
         var creation = await manager.RegisterAsync(
             new RegisterRequest("esi@example.org", "Str0ng!Passw0rd", "Esi Owusu", "+233241234567"),
@@ -116,7 +96,7 @@ public sealed class MembershipManagerTests
         var email = new FakeEmailAccess();
         var accounts = new FakeAccountAccess { Email = new("esi@example.org", "Esi", false) };
 
-        var outcome = await Create(accounts, new FakeCandidateAccess(null), email)
+        var outcome = await Create(accounts, email)
             .ResendVerificationEmailAsync(UserId, default);
 
         Assert.Equal(VerificationEmailOutcome.Sent, outcome);
@@ -129,7 +109,7 @@ public sealed class MembershipManagerTests
         var email = new FakeEmailAccess();
         var accounts = new FakeAccountAccess { Email = new("esi@example.org", "Esi", true) };
 
-        var outcome = await Create(accounts, new FakeCandidateAccess(null), email)
+        var outcome = await Create(accounts, email)
             .ResendVerificationEmailAsync(UserId, default);
 
         Assert.Equal(VerificationEmailOutcome.AlreadyVerified, outcome);
@@ -141,7 +121,7 @@ public sealed class MembershipManagerTests
     {
         var accounts = new FakeAccountAccess { Email = new("esi@example.org", "Esi", false) };
 
-        var outcome = await Create(accounts, new FakeCandidateAccess(null), new FakeEmailAccess(succeeds: false))
+        var outcome = await Create(accounts, new FakeEmailAccess(succeeds: false))
             .ResendVerificationEmailAsync(UserId, default);
 
         Assert.Equal(VerificationEmailOutcome.NotSent, outcome);
@@ -153,7 +133,7 @@ public sealed class MembershipManagerTests
         var email = new FakeEmailAccess();
         var accounts = new FakeAccountAccess { Email = new("esi@exmaple.org", "Esi", false) };
 
-        var result = await Create(accounts, new FakeCandidateAccess(null), email)
+        var result = await Create(accounts, email)
             .ChangeEmailAsync(UserId, new ChangeEmailRequest(" esi@example.org "), default);
 
         Assert.Equal(VerificationEmailOutcome.Sent, result.Outcome);
@@ -169,7 +149,7 @@ public sealed class MembershipManagerTests
         var email = new FakeEmailAccess();
         var accounts = new FakeAccountAccess { Email = new("esi@exmaple.org", "Esi", false), ChangeResult = change };
 
-        var result = await Create(accounts, new FakeCandidateAccess(null), email)
+        var result = await Create(accounts, email)
             .ChangeEmailAsync(UserId, new ChangeEmailRequest("taken@example.org"), default);
 
         Assert.Equal(VerificationEmailOutcome.Rejected, result.Outcome);
@@ -187,7 +167,7 @@ public sealed class MembershipManagerTests
             ChangeResult = EmailChange.AlreadyVerified
         };
 
-        var result = await Create(accounts, new FakeCandidateAccess(null), email)
+        var result = await Create(accounts, email)
             .ChangeEmailAsync(UserId, new ChangeEmailRequest("other@example.org"), default);
 
         Assert.Equal(VerificationEmailOutcome.AlreadyVerified, result.Outcome);
@@ -202,7 +182,7 @@ public sealed class MembershipManagerTests
     {
         var accounts = new FakeAccountAccess();
 
-        var verified = await Create(accounts, new FakeCandidateAccess(null))
+        var verified = await Create(accounts)
             .VerifyEmailAsync(new VerifyEmailRequest(UserId, token), default);
 
         Assert.Equal(expected, verified);
@@ -211,12 +191,9 @@ public sealed class MembershipManagerTests
 
     private static MembershipManager Create(
         FakeAccountAccess accounts,
-        FakeCandidateAccess candidates,
         FakeEmailAccess? email = null) =>
         new(
             accounts,
-            new FakeMembershipAccess(WorkspaceId),
-            candidates,
             email ?? new FakeEmailAccess(),
             new AppLinks("https://app.test/"),
             TimeProvider.System);

@@ -85,6 +85,7 @@ public static class DependencyInjection
             .AddScoped<IAccountAccess, AccountAccess>()
             .AddScoped<IMembershipAccess, MembershipAccess>()
             .AddScoped<ICandidateAccess, CandidateAccess>()
+            .AddSingleton<IJobTitleAccess, EscoJobTitleAccess>()
             .AddScoped<IJobAccess, JobAccess>()
             .AddScoped<IPipelineAccess, PipelineAccess>()
             .AddScoped<IOutreachAccess, OutreachAccess>();

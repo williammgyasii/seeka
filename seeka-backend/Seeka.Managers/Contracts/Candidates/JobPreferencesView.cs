@@ -5,7 +5,6 @@ public sealed record JobPreferencesView(
     Guid WorkspaceId,
     string[] TargetJobTitles,
     string[] EmploymentTypes,
-    string AvailableWorkingHours,
     decimal? MinimumCompensation,
     string? CompensationCurrency,
     DateTimeOffset UpdatedAt);

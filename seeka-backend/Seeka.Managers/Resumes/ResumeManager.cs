@@ -88,7 +88,7 @@ public sealed class ResumeManager(
         var facts = await extractor.ExtractAsync(text, cancellationToken);
         return facts is null
             ? (ResumeStatus.ExtractionFailed, null)
-            : (ResumeStatus.Extracted, ResumeDraftPolicy.From(facts));
+            : (ResumeStatus.Extracted, ResumeDraftPolicy.From(facts, DateOnly.FromDateTime(timeProvider.GetUtcNow().UtcDateTime)));
     }
 
     private static ResumeView View(StoredResume resume) =>

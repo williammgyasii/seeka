@@ -1,4 +1,5 @@
 using Seeka.Engines.Pipeline;
+using Seeka.Engines.Profiles;
 using Seeka.Managers.Access.Pipeline;
 using Seeka.Managers.Contracts.Candidates;
 using Seeka.Managers.Contracts.Jobs;
@@ -12,13 +13,16 @@ internal static class ViewMapping
 {
     public static CandidateProfileView ToView(this CandidateProfile item) =>
         new(item.Id, item.WorkspaceId, item.FullName, item.CountryOfResidence, item.TimeZone,
-            item.Seniority, item.YearsOfExperience, item.ExperienceSummary, item.Skills,
+            SeniorityLevel.FromLegacy(item.Seniority) ?? "", item.YearsOfExperience, item.ExperienceSummary, item.Skills,
             item.UpdatedAt);
 
     public static JobPreferencesView ToView(this JobPreference item) =>
         new(item.Id, item.WorkspaceId, item.TargetJobTitles, item.EmploymentTypes,
-            item.AvailableWorkingHours, item.MinimumCompensation, item.CompensationCurrency,
-            item.UpdatedAt);
+            item.MinimumCompensation, item.CompensationCurrency, item.UpdatedAt);
+
+    public static SearchPreferences ToPreferences(this JobPreference item) =>
+        new(item.TargetJobTitles, item.EmploymentTypes,
+            item.MinimumCompensation, item.MaximumCompensation, item.CompensationCurrency);
 
     public static SavedJobView ToView(this SavedJob item) =>
         new(item.Id, item.WorkspaceId, item.JobPostingId, item.Stage, item.ApplicationStatus,

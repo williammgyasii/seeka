@@ -92,7 +92,9 @@ internal sealed class AccountAccess(
             .FirstOrDefaultAsync(cancellationToken);
         if (workspaceId is null) return null;
         var onboardingComplete = await db.CandidateProfiles.AsNoTracking()
-            .AnyAsync(item => item.WorkspaceId == workspaceId.Value, cancellationToken);
+            .AnyAsync(
+                item => item.WorkspaceId == workspaceId.Value && item.OnboardingCompletedAt != null,
+                cancellationToken);
         return new SessionResponse(
             user.Id,
             user.Email!,

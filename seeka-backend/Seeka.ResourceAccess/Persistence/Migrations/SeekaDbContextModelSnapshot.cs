@@ -249,10 +249,17 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.PrimitiveCollection<string[]>("CompletedSteps")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
                     b.Property<string>("CountryOfResidence")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
+
+                    b.Property<string>("DetailsJson")
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("ExperienceSummary")
                         .IsRequired()
@@ -262,6 +269,13 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(160)
                         .HasColumnType("character varying(160)");
+
+                    b.Property<string>("Headline")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<DateTimeOffset?>("OnboardingCompletedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Seniority")
                         .IsRequired()
@@ -497,10 +511,6 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("AvailableWorkingHours")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("CompensationCurrency")
                         .HasMaxLength(3)
                         .HasColumnType("character varying(3)");
@@ -508,6 +518,10 @@ namespace Seeka.ResourceAccess.Persistence.Migrations
                     b.PrimitiveCollection<string[]>("EmploymentTypes")
                         .IsRequired()
                         .HasColumnType("text[]");
+
+                    b.Property<decimal?>("MaximumCompensation")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("numeric(18,2)");
 
                     b.Property<decimal?>("MinimumCompensation")
                         .HasPrecision(18, 2)
