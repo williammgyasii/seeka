@@ -42,4 +42,4 @@
 ## 6. Release
 
 - [ ] 6.1 Ship in a release and upload the test résumé on `app.seekajobs.tech`; confirm every section comes through
-- [ ] 6.2 Sync the spec into `openspec/specs/`
+- [x] 6.2 Sync the spec into `openspec/specs/`

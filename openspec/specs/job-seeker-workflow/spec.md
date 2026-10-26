@@ -114,11 +114,10 @@ expire after one day and SHALL work on any device, signed in or not.
 
 The system SHALL store an editable candidate profile and job preferences,
 including residence, IANA timezone, target roles, seniority, skills,
-experience summary, employment types, available working hours, and optional
-minimum compensation with currency. Profile setup SHALL NOT pre-fill a fixed
-country, timezone, or working-hours zone; it SHALL suggest the timezone and
-residence from the user's device, and the user SHALL choose residence from a
-list of English country names.
+experience summary, employment types, and an optional monthly pay band with
+its currency. Profile setup SHALL NOT pre-fill a fixed country or timezone;
+it SHALL suggest the timezone and residence from the user's device, and the
+user SHALL choose residence from a list of English country names.
 
 #### Scenario: Ghanaian candidate saves preferences
 - **WHEN** a user saves Ghana as residence and Africa/Accra as timezone with valid job preferences
