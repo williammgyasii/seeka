@@ -79,11 +79,23 @@ jobs:
         run: printf '%s' "$EMAIL_API_TOKEN" | npx wrangler secret put EMAIL_API_TOKEN
         working-directory: seeka-edge
 
+      - name: Configure résumé secrets
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_RESUMES_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_RESUMES_SECRET_ACCESS_KEY }}
+        run: |
+          printf '%s' "$OPENAI_API_KEY" | npx wrangler secret put OPENAI_API_KEY
+          printf '%s' "$R2_ACCESS_KEY_ID" | npx wrangler secret put R2_ACCESS_KEY_ID
+          printf '%s' "$R2_SECRET_ACCESS_KEY" | npx wrangler secret put R2_SECRET_ACCESS_KEY
+        working-directory: seeka-edge
+
       - name: Deploy Worker and container
         run: >-
           npx wrangler deploy
           --var "APP_PUBLIC_URL:$CLOUDFLARE_PAGES_URL"
           --var "EMAIL_ACCOUNT_ID:$CLOUDFLARE_ACCOUNT_ID"
+          --var "R2_ACCOUNT_ID:$CLOUDFLARE_ACCOUNT_ID"
         working-directory: seeka-edge
 
       - name: Smoke test API

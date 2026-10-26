@@ -22,11 +22,11 @@
 ## 5. Frontend
 
 - [x] 5.1 Onboarding upload step with skip, an idempotency key per chosen file, status messages, and the pre-filled form, including after reload; verify with component tests
-- [ ] 5.2 Run the flow in the browser locally with a real résumé and confirm the form is pre-filled and nothing saves before Save
+- [x] 5.2 Run the flow in the browser locally with a real résumé and confirm the form is pre-filled and nothing saves before Save
 
 ## 6. Production
 
-- [ ] 6.1 Terraform private `seeka-resumes` bucket; verify with `terraform test`
+- [x] 6.1 Terraform private `seeka-resumes` bucket; verify with `terraform test`
 - [ ] 6.2 Production secrets for OpenAI and the bucket-scoped R2 token, passed through the edge Worker; verify with the edge routing test and a release
 - [ ] 6.3 Upload a résumé on `app.seekajobs.tech` and confirm the pre-filled form
 - [ ] 6.4 `openspec validate add-resume-extraction --strict`

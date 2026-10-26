@@ -1,5 +1,12 @@
 mock_provider "cloudflare" {}
 
+override_resource {
+  target = cloudflare_r2_bucket.resumes
+  values = {
+    id = "seeka-resumes"
+  }
+}
+
 variables {
   cloudflare_account_id = "00000000000000000000000000000000"
   cloudflare_api_token  = "test-token"
@@ -62,5 +69,14 @@ run "app_is_served_at_the_branded_domain" {
   assert {
     condition     = cloudflare_dns_record.app.proxied == true
     error_message = "The app record must be proxied so Cloudflare terminates TLS."
+  }
+}
+
+run "resumes_have_a_private_bucket" {
+  command = plan
+
+  assert {
+    condition     = cloudflare_r2_bucket.resumes.name == "seeka-resumes"
+    error_message = "The API stores résumés in the seeka-resumes bucket."
   }
 }
