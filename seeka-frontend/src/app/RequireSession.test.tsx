@@ -9,6 +9,7 @@ import { setupStore } from './store'
 
 beforeEach(() => {
   respond('get', '/api/candidate/resume', undefined, 404)
+  respond('get', '/api/candidate/profile', { completedSteps: [], onboardingComplete: false })
 })
 
 const session = {
